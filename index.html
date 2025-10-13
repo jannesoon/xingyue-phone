@@ -7,7 +7,7 @@
 
   <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
 
-  <title>星月小手机</title>
+  <title>星月小手机 ✨</title>
   <style>
     .message p,
     .diary-content {
@@ -67,7 +67,7 @@
     :root {
       --phone-width: 375px;
       --phone-height: 812px;
-      --user-bg-image: url('');
+      --user-bg-image: url('bg.jpg');
 
       /* === Noir's Ultimate Dynamic Theme Engine v2.0 === */
       /* 哼，现在所有的颜色都听从这三个总开关的指挥。*/
@@ -5056,7 +5056,7 @@
       <div id="lock-screen-overlay">
         <div id="home-clock-container">
           <div id="home-time">11:31</div>
-          <div id="home-date">8月29日 星期五</div>
+          <div id="home-date">星月交辉 · Ethan × 柒柒 · 8月29日 星期五</div>
           <div id="noir-author-mark"></div>
         </div>
         <div id="music-widget"
@@ -5290,7 +5290,21 @@
 
     </div>
 
-    <div id="chat-screen" class="screen">
+    <div 
+      <!-- 星月：桌面四图标 -->
+      <div class="app-icon" data-app="chat" style="left:20px; top:260px;">
+        <div class="app-icon-img">💬</div><span>聊天</span>
+      </div>
+      <div class="app-icon" data-app="feed" style="left:115px; top:260px;">
+        <div class="app-icon-img">📸</div><span>朋友圈</span>
+      </div>
+      <div class="app-icon" data-app="roles" style="left:210px; top:260px;">
+        <div class="app-icon-img">👤</div><span>角色</span>
+      </div>
+      <div class="app-icon" data-app="settings" style="left:305px; top:260px;">
+        <div class="app-icon-img">⚙️</div><span>设置</span>
+      </div>
+id="chat-screen" class="screen">
       <div id="chat-screen-container">
         <div id="chat-list-pane">
           <div id="chat-list-header">
@@ -6615,6 +6629,27 @@ const _0x4b3bbd=_0x52a6;(function(_0x85fa5c,_0x2ea5da){const _0x22c918=_0x52a6,_
       </div>
     </div>
   </div>
+
+<script>
+// —— 星月·最小导航 ——
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if(el){ el.classList.add('active'); }
+}
+
+// 按钮绑定（桌面四图标）
+document.querySelectorAll('.app-icon').forEach(icon => {
+  icon.addEventListener('click', () => {
+    const app = icon.getAttribute('data-app');
+    if(app === 'chat')      showScreen('chat-screen');
+    else if(app === 'feed') showScreen('friend-circle-list-screen') || showScreen('music-screen');
+    else if(app === 'roles')showScreen('user-profile-list-screen') || showScreen('character-screen');
+    else if(app === 'settings') showScreen('settings-screen');
+  });
+});
+</script>
+
 </body>
 
 </html>
