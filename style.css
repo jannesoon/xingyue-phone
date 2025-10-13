@@ -1,0 +1,49 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'sans-serif';
+}
+
+.phone-bg {
+  background: url('/public/background.jpg') no-repeat center center;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  text-shadow: 1px 1px 2px #000;
+  padding: 20px;
+}
+
+.time {
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 100px);
+  grid-gap: 20px;
+  justify-content: center;
+}
+
+.icon {
+  width: 100px;
+  height: 100px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.footer {
+  margin-bottom: 10px;
+  font-size: 14px;
+  opacity: 0.8;
+}
