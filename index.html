@@ -5,47 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>星月小手机</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 0;
+      width: 100%;
+      height: 100vh;
       font-family: "Helvetica Neue", sans-serif;
-      background-color: #0f0f1a;
-      color: white;
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      text-align: center;
-    }
-
-    .time {
-      font-size: 1.5em;
-      margin-bottom: 10px;
-    }
-
-    .photo-container {
-      width: 280px;
-      height: 500px;
-      border-radius: 20px;
+      background: url('C1FEDC3A-3A2E-4E16-9A81-75CE4675EB9A%20(1).png') no-repeat center center/cover;
+      position: relative;
       overflow: hidden;
-      box-shadow: 0 0 15px rgba(255,255,255,0.2);
-      background-image: url('https://placekitten.com/400/600'); /* 替换为你们的合影链接 */
-      background-size: cover;
-      background-position: center;
-      margin-bottom: 15px;
     }
-
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(3px);
+    }
+    .time {
+      font-size: 2em;
+      font-weight: 600;
+      margin-top: 60px;
+      z-index: 2;
+      text-shadow: 0 0 6px rgba(255,255,255,0.6);
+    }
     .title {
+      position: absolute;
+      bottom: 60px;
       font-size: 1.2em;
-      opacity: 0.8;
+      opacity: 0.9;
+      z-index: 2;
+      text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+    .nav {
+      position: absolute;
+      bottom: 10px;
+      display: flex;
+      justify-content: space-around;
+      width: 90%;
+      max-width: 400px;
+      z-index: 3;
+    }
+    .nav button {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      border-radius: 15px;
+      color: #fff;
+      font-size: 0.9em;
+      padding: 8px 14px;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .nav button:hover {
+      background: rgba(255,255,255,0.3);
     }
   </style>
 </head>
 <body>
+  <div class="overlay"></div>
   <div class="time" id="timeDisplay">--:--</div>
-  <div class="photo-container"></div>
   <div class="title">欢迎来到星月小手机 ✨</div>
+  <div class="nav">
+    <button>💬 聊天</button>
+    <button>📸 朋友圈</button>
+    <button>🎭 逸辰们</button>
+    <button>📖 公众号</button>
+  </div>
 
   <script>
     function updateTime() {
@@ -54,9 +83,8 @@
       const minute = now.getMinutes().toString().padStart(2, '0');
       document.getElementById('timeDisplay').innerText = `${hour}:${minute}`;
     }
-
     updateTime();
-    setInterval(updateTime, 10000); // 每10秒更新一次时间
+    setInterval(updateTime, 10000);
   </script>
 </body>
 </html>
