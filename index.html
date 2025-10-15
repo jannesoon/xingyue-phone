@@ -9780,7 +9780,65 @@ input, textarea, select {
     border-color: #38383a;
 }
 /* ▲▲▲ 新增CSS结束 ▲▲▲ */
+/* ▼▼▼ 【全新】语音消息组件样式 ▼▼▼ */
 
+.voice-message-body {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    min-width: 80px;
+    max-width: 220px;
+    padding: 8px 12px;
+}
+.message-bubble.user .voice-message-body {
+    color: #1a3d00;
+    flex-direction: row-reverse;
+}
+.message-bubble.ai .voice-message-body {
+    color: var(--text-primary);
+}
+
+.voice-play-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: currentColor;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.2s;
+}
+.voice-play-btn:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.voice-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: none; /* 默认隐藏 */
+    margin: 4px;
+}
+
+.voice-duration {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 10px;
+    flex-shrink: 0;
+}
+.message-bubble.user .voice-duration {
+    color: #3e6224;
+}
+
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
     </style>
 </head>
 <body>
@@ -10469,6 +10527,21 @@ input, textarea, select {
                     </label>
                     <input type="number" id="block-cooldown-input" min="0.1" step="0.1" value="1" style="width: 80px; text-align: center;">
                 </div>
+<!-- ▼▼▼ 在这里粘贴下面的新代码 ▼▼▼ -->
+<hr style="margin: 30px 0; opacity: 0.3;">
+<h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">语音消息设置 (Minimax TTS)</h3>
+<p style="font-size: 14px; color: #666; background-color: #f0f0f0; padding: 10px; border-radius: 8px;">
+    在 AI 回复的文字前加上 <code style="background-color: #e0e0e0; padding: 2px 4px; border-radius: 4px;">[V]</code> 前缀，即可让该条消息自动渲染为可播放的语音。
+</p>
+<div class="form-group">
+    <label for="minimax-group-id">Minimax Group ID</label>
+    <input type="text" id="minimax-group-id" placeholder="在此输入你的 Group ID">
+</div>
+<div class="form-group">
+    <label for="minimax-api-key">Minimax API Key</label>
+    <input type="password" id="minimax-api-key" placeholder="在此输入你的 API Key">
+</div>
+<!-- ▲▲▲ 粘贴结束 ▲▲▲ -->
 <hr style="margin: 30px 0; opacity: 0.3;">
                 <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">性能与显示设置</h3>
                 <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
@@ -11803,6 +11876,10 @@ input, textarea, select {
             <div id="group-members-settings"></div>
             <button id="manage-members-btn" class="form-button form-button-secondary" style="margin-top: 15px;">管理群成员</button>
         </div>
+<div class="form-group" id="ai-voice-id-group">
+    <label for="ai-voice-id-input">语音 ID (Minimax voice_id)</label>
+    <input type="text" id="ai-voice-id-input" placeholder="例如: female-shaonv-jingpin">
+</div>
         <div class="form-group">
             <label for="max-memory">短期记忆（上下文）条数</label>
             <input type="number" id="max-memory" value="10">
@@ -13037,7 +13114,7 @@ function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecisi
           ];
                 // --- 已修正 ---
                // 【核心修复】在 state 对象中初始化 cache 属性
-let state = { chats: {}, activeChatId: null, globalSettings: {}, apiConfig: {}, userStickers: [], worldBooks: [], personaPresets: [], qzoneSettings: {}, activeAlbumId: null, cache: { songs: new Map(), lyrics: new Map() } };
+let state = { chats: {}, activeChatId: null, globalSettings: {}, apiConfig: {}, userStickers: [], worldBooks: [], personaPresets: [], qzoneSettings: {}, activeAlbumId: null, cache: { songs: new Map(), lyrics: new Map() }, ttsCache: new Map() };
                 // --- 修正结束 ---
 // ▼▼▼ 在 let state = ... 之后，粘贴这个新变量 ▼▼▼
 let werewolfGameState = {
@@ -13862,10 +13939,10 @@ function showCustomAlert(title, message) {
                 // ===================================================================
         
         // ▼▼▼ 【请用这个 V30 版本】完整替换旧的 db.version(...) 代码块 ▼▼▼
-        db.version(37).stores({ 
+        db.version(38).stores({ 
             doubanPosts: '++id, timestamp',
            chats: '&id, isGroup, groupId, isPinned, memos, diary, appUsageLog, lastIntelligentSummaryTimestamp',
-            apiConfig: '&id', 
+           apiConfig: '&id, minimaxGroupId, minimaxApiKey',
             globalSettings: '&id', 
             userStickers: '&id, url, name, categoryId',
             worldBooks: '&id, name, categoryId',
@@ -15473,7 +15550,7 @@ async function loadAllDataFromDB() {
     if (memoriesToUpdate.length > 0) {
         await db.memories.bulkPut(memoriesToUpdate);
     }
-    state.apiConfig = apiConfig || { id: 'main', proxyUrl: '', apiKey: '', model: '', secondaryProxyUrl: '', secondaryApiKey: '', secondaryModel: '' };
+    state.apiConfig = apiConfig || { id: 'main', proxyUrl: '', apiKey: '', model: '', secondaryProxyUrl: '', secondaryApiKey: '', secondaryModel: '', minimaxGroupId: '', minimaxApiKey: '' };
     state.userStickers = userStickers || [];
     state.worldBooks = worldBooks || [];
     musicState.playlist = musicLib?.playlist || [];
@@ -15800,6 +15877,8 @@ function formatTimestampForAI(timestamp) {
             const savedTemp = state.globalSettings.apiTemperature || 0.8;
             tempSlider.value = savedTemp;
             tempValue.textContent = savedTemp;    
+           document.getElementById('minimax-group-id').value = state.apiConfig.minimaxGroupId || '';
+           document.getElementById('minimax-api-key').value = state.apiConfig.minimaxApiKey || '';
             // 2. 【核心新增】加载并渲染预设下拉菜单
             loadApiPresetsDropdown();
         }
@@ -16144,83 +16223,75 @@ async function renderChatList() {
         }
 
 // ▼▼▼ 【全新 | 独立设置+加载动画版】请用这个版本替换旧的 loadMoreChats 函数 ▼▼▼
-function loadMoreChats() {
-    // 1. 防止重复触发
-    if (isLoadingMoreChats) return;
+        function loadMoreChats() {
+            if (isLoadingMoreChats) return;
 
-    const chatListEl = document.getElementById('chat-list');
-    // 列表的滚动容器
-    const scrollContainer = document.getElementById('messages-view'); 
-    if (!chatListEl || !scrollContainer) return;
+            const chatListEl = document.getElementById('chat-list');
+            const scrollContainer = document.getElementById('messages-view');
+            if (!chatListEl || !scrollContainer) return;
+            if (chatListRenderCount >= sortedChatListItems.length) return;
 
-    // 检查是否已经加载完所有数据
-    if (chatListRenderCount >= sortedChatListItems.length) return;
-    
-    // 2. 设置加载状态，并在底部显示加载动画
-    isLoadingMoreChats = true;
-    showLoader(chatListEl, 'bottom'); 
-    
-    // 【核心】从全局设置中读取每页加载条数，默认为 30
-    const renderWindow = state.globalSettings.chatListRenderWindow || 30;
+            isLoadingMoreChats = true;
 
-    // 3. 使用 setTimeout 模拟网络延迟，让动画显示出来
-    setTimeout(() => {
-        // 移除加载动画
-        hideLoader(chatListEl); 
+            // 核心修改1：判断是否是首次加载
+            const isInitialLoad = chatListRenderCount === 0;
 
-        const nextSliceStart = chatListRenderCount;
-        const nextSliceEnd = chatListRenderCount + renderWindow;
-        const itemsToAppend = sortedChatListItems.slice(nextSliceStart, nextSliceEnd);
+            // 将核心渲染逻辑封装成一个函数
+            const renderContent = () => {
+                hideLoader(chatListEl);
 
-        const fragment = document.createDocumentFragment();
-        let currentGroupContent = chatListEl.querySelector('.chat-group-content:last-of-type');
+                const renderWindow = state.globalSettings.chatListRenderWindow || 30;
+                const nextSliceStart = chatListRenderCount;
+                const nextSliceEnd = chatListRenderCount + renderWindow;
+                const itemsToAppend = sortedChatListItems.slice(nextSliceStart, nextSliceEnd);
 
-        // 如果追加的第一项是普通聊天，且列表末尾是一个展开的分组，则放入该分组
-        // 注意：如果是一个新的分组头，逻辑会自动处理
-        
-        itemsToAppend.forEach(item => {
-            if (item.type === 'groupHeader') {
-                const groupContainer = createChatGroupContainer(item.group);
-                fragment.appendChild(groupContainer);
-                // 更新当前指向的分组内容容器
-                currentGroupContent = groupContainer.querySelector('.chat-group-content');
-            } else if (item.type === 'chatItem') {
-                const listItem = createChatListItem(item.chat);
-                
-                // 如果该聊天属于某个分组，且当前正处于该分组下方
-                if (item.chat.groupId && currentGroupContent) {
-                    currentGroupContent.appendChild(listItem);
-                } else {
-                    // 否则（未分组，或新分组未开始），直接添加到主片段
-                    fragment.appendChild(listItem);
-                    // 如果这是一个未分组的聊天，打断当前的分组上下文
-                    if (!item.chat.groupId) currentGroupContent = null;
+                const fragment = document.createDocumentFragment();
+                let currentGroupContent = chatListEl.querySelector('.chat-group-content:last-of-type');
+
+                itemsToAppend.forEach(item => {
+                    if (item.type === 'groupHeader') {
+                        const groupContainer = createChatGroupContainer(item.group);
+                        fragment.appendChild(groupContainer);
+                        currentGroupContent = groupContainer.querySelector('.chat-group-content');
+                    } else if (item.type === 'chatItem') {
+                        const listItem = createChatListItem(item.chat);
+                        if (item.chat.groupId && currentGroupContent) {
+                            currentGroupContent.appendChild(listItem);
+                        } else {
+                            fragment.appendChild(listItem);
+                            if (!item.chat.groupId) currentGroupContent = null;
+                        }
+                    }
+                });
+
+                chatListEl.appendChild(fragment);
+                chatListRenderCount += itemsToAppend.length;
+
+                chatListEl.querySelectorAll('.chat-group-header:not([data-has-listener="true"])').forEach(header => {
+                    header.dataset.hasListener = "true";
+                    header.addEventListener('click', () => {
+                        header.classList.toggle('collapsed');
+                        header.nextElementSibling.classList.toggle('collapsed');
+                    });
+                });
+
+                isLoadingMoreChats = false;
+
+                if (scrollContainer.scrollHeight <= scrollContainer.clientHeight && chatListRenderCount < sortedChatListItems.length) {
+                    loadMoreChats();
                 }
+            };
+
+            // 核心修改2：根据是否是首次加载，决定是否使用延迟
+            if (isInitialLoad) {
+                // 如果是首次加载，则立即执行渲染，没有任何延迟
+                renderContent();
+            } else {
+                // 如果是后续加载（滚动时），则显示加载动画并保留延迟，以优化体验
+                showLoader(chatListEl, 'bottom');
+                setTimeout(renderContent, 500);
             }
-        });
-        
-        chatListEl.appendChild(fragment);
-        chatListRenderCount += itemsToAppend.length;
-        
-        // 为新添加的分组头绑定折叠事件
-        chatListEl.querySelectorAll('.chat-group-header:not([data-has-listener="true"])').forEach(header => {
-            header.dataset.hasListener = "true"; // 防止重复绑定
-            header.addEventListener('click', () => {
-                header.classList.toggle('collapsed');
-                header.nextElementSibling.classList.toggle('collapsed');
-            });
-        });
-
-        // 4. 重置加载状态
-        isLoadingMoreChats = false;
-        
-        // 如果加载后内容仍未填满屏幕（例如在大屏幕上），继续加载
-        if (scrollContainer.scrollHeight <= scrollContainer.clientHeight && chatListRenderCount < sortedChatListItems.length) {
-            loadMoreChats();
         }
-
-    }, 500); // 延迟 500ms
-}
 // ▲▲▲ 替换结束 ▲▲▲ 
 // ▼▼▼ 【全新 | V2.0 容错增强版】请用这个新版本替换旧的 createChatListItem 函数 ▼▼▼
 function createChatListItem(chat) {
@@ -16342,167 +16413,177 @@ function createChatListItem(chat) {
 // ▲▲▲ 替换结束 ▲▲▲
         
 // ▼▼▼ 【无限滚动修复版】请用这个新版本替换旧的 renderChatInterface 函数 ▼▼▼
-async function renderChatInterface(chatId) {
-    applyButtonOrder();
-    cleanupWaimaiTimers();
-    const chat = state.chats[chatId];
-    if (!chat) return;
+        async function renderChatInterface(chatId) {
+            applyButtonOrder();
+            cleanupWaimaiTimers();
+            const chat = state.chats[chatId];
+            if (!chat) return;
 
-    exitSelectionMode();
-    
-    const messagesContainer = document.getElementById('chat-messages');
-    const chatInputArea = document.getElementById('chat-input-area');
-    const lockOverlay = document.getElementById('chat-lock-overlay');
-    const lockContent = document.getElementById('chat-lock-content');
-    
-    messagesContainer.dataset.theme = chat.settings.theme || 'default';
-    const fontSize = chat.settings.fontSize || 13;
-    messagesContainer.style.setProperty('--chat-font-size', `${fontSize}px`);
-    applyScopedCss(chat.settings.customCss || '', '#chat-messages', 'custom-bubble-style');
-    
-    document.getElementById('chat-header-title').textContent = chat.name;
-    const statusContainer = document.getElementById('chat-header-status');
-    const statusTextEl = statusContainer.querySelector('.status-text');
+            exitSelectionMode();
 
-    if (chat.isGroup) {
-        statusContainer.style.display = 'none';
-        document.getElementById('chat-header-title-wrapper').style.justifyContent = 'center';
-    } else {
-        statusContainer.style.display = 'flex';
-        document.getElementById('chat-header-title-wrapper').style.justifyContent = 'flex-start';
-        statusTextEl.textContent = chat.status?.text || '在线';
-        statusContainer.classList.toggle('busy', chat.status?.isBusy || false);
-    }
-    
-    const chatScreen = document.getElementById('chat-interface-screen');
-    const individualBg = chat.settings.background;
-    const globalBg = state.globalSettings.globalChatBackground;
-    const isDarkMode = document.getElementById('phone-screen').classList.contains('dark-mode');
-    const defaultColor = isDarkMode ? '#000000' : '#f0f2f5';
+            const messagesContainer = document.getElementById('chat-messages');
+            const chatInputArea = document.getElementById('chat-input-area');
+            const lockOverlay = document.getElementById('chat-lock-overlay');
+            const lockContent = document.getElementById('chat-lock-content');
 
-    if (individualBg) {
-        chatScreen.style.backgroundImage = `url(${individualBg})`;
-        chatScreen.style.backgroundColor = 'transparent';
-    } else if (globalBg) {
-        chatScreen.style.backgroundImage = `url(${globalBg})`;
-        chatScreen.style.backgroundColor = 'transparent';
-    } else {
-        chatScreen.style.backgroundImage = 'none';
-        chatScreen.style.backgroundColor = defaultColor;
-    }
+            messagesContainer.dataset.theme = chat.settings.theme || 'default';
+            const fontSize = chat.settings.fontSize || 13;
+            messagesContainer.style.setProperty('--chat-font-size', `${fontSize}px`);
+            applyScopedCss(chat.settings.customCss || '', '#chat-messages', 'custom-bubble-style');
 
-    if (chat.isSpectatorGroup) {
-        chatInputArea.style.display = 'none';
-        lockOverlay.style.display = 'flex';
-        lockContent.innerHTML = `
-            <span class="lock-text">正在围观AI们的群聊...</span>
-            <div class="spectator-actions-container">
-                <button id="spectator-reroll-btn" class="lock-action-btn secondary" title="重新生成上一轮对话">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4"></path>
-                        <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
-                    </svg>
-                </button>
-                <button id="spectator-propel-btn" class="lock-action-btn">🎬 推进剧情</button>
-                <button id="spectator-edit-btn" class="lock-action-btn secondary" title="导演剪辑室：编辑AI上一轮的响应">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-                        <line x1="16" y1="8" x2="2" y2="22"></line>
-                        <line x1="17.5" y1="15" x2="9" y2="15"></line>
-                    </svg>
-                </button>
-            </div>
-        `;
-        document.getElementById('spectator-propel-btn').onclick = triggerSpectatorGroupAiAction;
-    } else {
-        chatInputArea.style.display = 'flex';
-        lockOverlay.style.display = 'none';
-        lockContent.innerHTML = '';
-        if (!chat.isGroup && chat.relationship.status !== 'friend') {
-            lockOverlay.style.display = 'flex';
-            chatInputArea.style.visibility = 'hidden';
-            
-            let lockHtml = '';
-            switch (chat.relationship.status) {
-                 case 'blocked_by_user':
-                    const isSimulationRunning = simulationIntervalId !== null;
-                    const blockedTimestamp = chat.relationship.blockedTimestamp;
-                    const cooldownHours = state.globalSettings.blockCooldownHours || 1;
-                    const cooldownMilliseconds = cooldownHours * 60 * 60 * 1000;
-                    const timeSinceBlock = Date.now() - blockedTimestamp;
-                    const isCooldownOver = timeSinceBlock > cooldownMilliseconds;
-                    const timeRemainingMinutes = Math.max(0, Math.ceil((cooldownMilliseconds - timeSinceBlock) / (1000 * 60)));
-    
-                    lockHtml = `
-                        <span class="lock-text">你已将“${chat.name}”拉黑。</span>
-                        <button id="unblock-btn" class="lock-action-btn">解除拉黑</button>
-                        <div style="margin-top: 20px; padding: 10px; border: 1px dashed #ccc; border-radius: 8px; font-size: 11px; text-align: left; color: #666; background: rgba(0,0,0,0.02);">
-                            <strong style="color: #333;">【开发者诊断面板】</strong><br>
-                            - 后台活动总开关: ${state.globalSettings.enableBackgroundActivity ? '<span style="color: green;">已开启</span>' : '<span style="color: red;">已关闭</span>'}<br>
-                            - 系统心跳计时器: ${isSimulationRunning ? '<span style="color: green;">运行中</span>' : '<span style="color: red;">未运行</span>'}<br>
-                            - 当前角色状态: <strong>${chat.relationship.status}</strong><br>
-                            - 需要冷静(小时): <strong>${cooldownHours}</strong><br>
-                            - 冷静期是否结束: ${isCooldownOver ? '<span style="color: green;">是</span>' : `<span style="color: orange;">否 (还剩约 ${timeRemainingMinutes} 分钟)</span>`}<br>
-                            - 触发条件: ${isCooldownOver && state.globalSettings.enableBackgroundActivity ? '<span style="color: green;">已满足，等待下次系统心跳</span>' : '<span style="color: red;">未满足</span>'}
-                        </div>
-                        <button id="force-apply-check-btn" class="lock-action-btn secondary" style="margin-top: 10px;">强制触发一次好友申请检测</button>
-                    `;
-                    break;
-                case 'blocked_by_ai':
-                    lockHtml = `
-                        <span class="lock-text">你被对方拉黑了。</span>
-                        <button id="apply-friend-btn" class="lock-action-btn">重新申请加为好友</button>
-                    `;
-                    break;
-                case 'pending_user_approval':
-                    lockHtml = `
-                        <span class="lock-text">“${chat.name}”请求添加你为好友：<br><i>“${chat.relationship.applicationReason}”</i></span>
-                        <button id="accept-friend-btn" class="lock-action-btn">接受</button>
-                        <button id="reject-friend-btn" class="lock-action-btn secondary">拒绝</button>
-                    `;
-                    break;
-                case 'pending_ai_approval':
-                    lockHtml = `<span class="lock-text">好友申请已发送，等待对方通过...</span>`;
-                    break;
+            document.getElementById('chat-header-title').textContent = chat.name;
+            const statusContainer = document.getElementById('chat-header-status');
+            const statusTextEl = statusContainer.querySelector('.status-text');
+
+            if (chat.isGroup) {
+                statusContainer.style.display = 'none';
+                document.getElementById('chat-header-title-wrapper').style.justifyContent = 'center';
+            } else {
+                statusContainer.style.display = 'flex';
+                document.getElementById('chat-header-title-wrapper').style.justifyContent = 'flex-start';
+                statusTextEl.textContent = chat.status?.text || '在线';
+                statusContainer.classList.toggle('busy', chat.status?.isBusy || false);
             }
-            lockContent.innerHTML = lockHtml;
-        } else {
-             lockOverlay.style.display = 'none';
-             chatInputArea.style.visibility = 'visible';
-        }
-    }
 
-    messagesContainer.innerHTML = '';
-    const history = chat.history;
-    const totalMessages = history.length;
-    currentRenderedCount = 0;
-    const renderWindow = state.globalSettings.chatRenderWindow || 50;
-    const initialMessages = history.slice(-renderWindow); 
-    let lastTimestamp = 0;
-    const fragment = document.createDocumentFragment();
-    for (const msg of initialMessages) {
-        if (lastTimestamp > 0 && (msg.timestamp - lastTimestamp > 600000)) {
-            fragment.appendChild(createSystemTimestampElement(msg.timestamp));
+            const chatScreen = document.getElementById('chat-interface-screen');
+            const individualBg = chat.settings.background;
+            const globalBg = state.globalSettings.globalChatBackground;
+            const isDarkMode = document.getElementById('phone-screen').classList.contains('dark-mode');
+            const defaultColor = isDarkMode ? '#000000' : '#f0f2f5';
+
+            if (individualBg) {
+                chatScreen.style.backgroundImage = `url(${individualBg})`;
+                chatScreen.style.backgroundColor = 'transparent';
+            } else if (globalBg) {
+                chatScreen.style.backgroundImage = `url(${globalBg})`;
+                chatScreen.style.backgroundColor = 'transparent';
+            } else {
+                chatScreen.style.backgroundImage = 'none';
+                chatScreen.style.backgroundColor = defaultColor;
+            }
+
+            // ... (中间所有关于锁定、旁观模式的 if/else 逻辑保持不变) ...
+            if (chat.isSpectatorGroup) {
+                chatInputArea.style.display = 'none';
+                lockOverlay.style.display = 'flex';
+                lockContent.innerHTML = `
+                    <span class="lock-text">正在围观AI们的群聊...</span>
+                    <div class="spectator-actions-container">
+                        <button id="spectator-reroll-btn" class="lock-action-btn secondary" title="重新生成上一轮对话">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4"></path>
+                                <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
+                            </svg>
+                        </button>
+                        <button id="spectator-propel-btn" class="lock-action-btn">🎬 推进剧情</button>
+                        <button id="spectator-edit-btn" class="lock-action-btn secondary" title="导演剪辑室：编辑AI上一轮的响应">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                                <line x1="16" y1="8" x2="2" y2="22"></line>
+                                <line x1="17.5" y1="15" x2="9" y2="15"></line>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                document.getElementById('spectator-propel-btn').onclick = triggerSpectatorGroupAiAction;
+            } else {
+                chatInputArea.style.display = 'flex';
+                lockOverlay.style.display = 'none';
+                lockContent.innerHTML = '';
+                if (!chat.isGroup && chat.relationship.status !== 'friend') {
+                    lockOverlay.style.display = 'flex';
+                    chatInputArea.style.visibility = 'hidden';
+                    
+                    let lockHtml = '';
+                    switch (chat.relationship.status) {
+                         case 'blocked_by_user':
+                            const isSimulationRunning = simulationIntervalId !== null;
+                            const blockedTimestamp = chat.relationship.blockedTimestamp;
+                            const cooldownHours = state.globalSettings.blockCooldownHours || 1;
+                            const cooldownMilliseconds = cooldownHours * 60 * 60 * 1000;
+                            const timeSinceBlock = Date.now() - blockedTimestamp;
+                            const isCooldownOver = timeSinceBlock > cooldownMilliseconds;
+                            const timeRemainingMinutes = Math.max(0, Math.ceil((cooldownMilliseconds - timeSinceBlock) / (1000 * 60)));
+            
+                            lockHtml = `
+                                <span class="lock-text">你已将“${chat.name}”拉黑。</span>
+                                <button id="unblock-btn" class="lock-action-btn">解除拉黑</button>
+                                <div style="margin-top: 20px; padding: 10px; border: 1px dashed #ccc; border-radius: 8px; font-size: 11px; text-align: left; color: #666; background: rgba(0,0,0,0.02);">
+                                    <strong style="color: #333;">【开发者诊断面板】</strong><br>
+                                    - 后台活动总开关: ${state.globalSettings.enableBackgroundActivity ? '<span style="color: green;">已开启</span>' : '<span style="color: red;">已关闭</span>'}<br>
+                                    - 系统心跳计时器: ${isSimulationRunning ? '<span style="color: green;">运行中</span>' : '<span style="color: red;">未运行</span>'}<br>
+                                    - 当前角色状态: <strong>${chat.relationship.status}</strong><br>
+                                    - 需要冷静(小时): <strong>${cooldownHours}</strong><br>
+                                    - 冷静期是否结束: ${isCooldownOver ? '<span style="color: green;">是</span>' : `<span style="color: orange;">否 (还剩约 ${timeRemainingMinutes} 分钟)</span>`}<br>
+                                    - 触发条件: ${isCooldownOver && state.globalSettings.enableBackgroundActivity ? '<span style="color: green;">已满足，等待下次系统心跳</span>' : '<span style="color: red;">未满足</span>'}
+                                </div>
+                                <button id="force-apply-check-btn" class="lock-action-btn secondary" style="margin-top: 10px;">强制触发一次好友申请检测</button>
+                            `;
+                            break;
+                        case 'blocked_by_ai':
+                            lockHtml = `
+                                <span class="lock-text">你被对方拉黑了。</span>
+                                <button id="apply-friend-btn" class="lock-action-btn">重新申请加为好友</button>
+                            `;
+                            break;
+                        case 'pending_user_approval':
+                            lockHtml = `
+                                <span class="lock-text">“${chat.name}”请求添加你为好友：<br><i>“${chat.relationship.applicationReason}”</i></span>
+                                <button id="accept-friend-btn" class="lock-action-btn">接受</button>
+                                <button id="reject-friend-btn" class="lock-action-btn secondary">拒绝</button>
+                            `;
+                            break;
+                        case 'pending_ai_approval':
+                            lockHtml = `<span class="lock-text">好友申请已发送，等待对方通过...</span>`;
+                            break;
+                    }
+                    lockContent.innerHTML = lockHtml;
+                } else {
+                     lockOverlay.style.display = 'none';
+                     chatInputArea.style.visibility = 'visible';
+                }
+            }
+            
+            messagesContainer.innerHTML = '';
+            const history = chat.history;
+            currentRenderedCount = 0;
+            const renderWindow = state.globalSettings.chatRenderWindow || 50;
+            const initialMessages = history.slice(-renderWindow);
+
+            // --- ▼▼▼ 核心修改就在这里！ ▼▼▼ ---
+            // 1. 创建一个数组来存放所有“创建消息元素”的异步任务 (Promise)
+            const messagePromises = [];
+            let lastTimestamp = 0;
+
+            for (const msg of initialMessages) {
+                if (lastTimestamp > 0 && (msg.timestamp - lastTimestamp > 600000)) {
+                    // 时间戳是同步创建的，可以直接添加
+                    messagePromises.push(Promise.resolve(createSystemTimestampElement(msg.timestamp)));
+                }
+                // 2. 将异步任务推入数组，但不在这里等待它完成
+                messagePromises.push(createMessageElement(msg, chat, true));
+                lastTimestamp = msg.timestamp;
+            }
+
+            // 3. 使用 Promise.all() 并发执行所有的异步任务
+            const messageElements = await Promise.all(messagePromises);
+
+            // 4. 所有任务完成后，一次性将所有创建好的元素添加到页面中
+            const fragment = document.createDocumentFragment();
+            messageElements.filter(Boolean).forEach(el => fragment.appendChild(el));
+            messagesContainer.appendChild(fragment);
+            // --- ▲▲▲ 修改结束 ▲▲▲ ---
+
+            currentRenderedCount = initialMessages.length;
+
+            const typingIndicator = document.createElement('div');
+            typingIndicator.id = 'typing-indicator';
+            typingIndicator.style.display = 'none';
+            typingIndicator.textContent = '对方正在输入...';
+            messagesContainer.appendChild(typingIndicator);
+
+            setTimeout(() => messagesContainer.scrollTop = messagesContainer.scrollHeight, 0);
         }
-        const messageEl = await createMessageElement(msg, chat, true);
-        if (messageEl) {
-            fragment.appendChild(messageEl);
-        }
-        lastTimestamp = msg.timestamp;
-    }
-    messagesContainer.appendChild(fragment);
-    currentRenderedCount = initialMessages.length;
-    
-    // 【【【核心修复：彻底删除 prependLoadMoreButton 的调用】】】
-    // 旧的 if (totalMessages > currentRenderedCount) { ... } 代码块已删除
-    
-    const typingIndicator = document.createElement('div');
-    typingIndicator.id = 'typing-indicator';
-    typingIndicator.style.display = 'none';
-    typingIndicator.textContent = '对方正在输入...';
-    messagesContainer.appendChild(typingIndicator);
-    setTimeout(() => messagesContainer.scrollTop = messagesContainer.scrollHeight, 0);
-}
 // ▲▲▲ 替换结束 ▲▲▲
         
                 
@@ -17347,7 +17428,22 @@ function scrollToOriginalMessage(originalTimestamp) {
                             return `<span class="offline-description">${parseMarkdown(part.trim()).replace(/\n/g, '<br>')}</span>`;
                         }
                     }).join(''); // 最后将所有片段拼接成最终的HTML
-                } else if (msg.type === 'share_link') {
+                }
+else if (msg.type === 'tts_voice') {
+    bubble.classList.add('is-voice-message', 'is-card-like');
+    const duration = Math.max(1, Math.round((msg.content || '').length / 5));
+    const durationFormatted = `0:${String(duration).padStart(2, '0')}''`;
+    // 从聊天设置中获取为该角色指定的 voice_id，如果没有，则使用一个默认值
+    const voiceId = chat.settings.minimaxVoiceId || 'female-shaonv-jingpin';
+
+    contentHtml = `
+        <div class="voice-message-body" data-text="${encodeURIComponent(msg.content)}" data-voice-id="${voiceId}">
+            <button class="voice-play-btn">▶</button>
+            <div class="voice-spinner"></div>
+            <span class="voice-duration">${durationFormatted}</span>
+        </div>
+    `;
+}  else if (msg.type === 'share_link') {
                     bubble.classList.add('is-link-share', 'is-card-like');
                     contentHtml = `<div class="link-share-card" data-timestamp="${msg.timestamp}"><div class="title">${msg.title || '无标题'}</div><div class="description">${msg.description || '点击查看详情...'}</div><div class="footer"><svg class="footer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg><span>${msg.source_name || '链接分享'}</span></div></div>`;
                 } else if (msg.type === 'share_card') {
@@ -19409,7 +19505,12 @@ if (lastUserMessage &&
                 let notificationShown = false;
         
                 for (const msgData of consolidatedMessages) {
-                    
+    if (msgData.type === 'text' && typeof msgData.content === 'string' && msgData.content.trim().startsWith('[V]')) {
+        // 2. 如果是，就将其类型转换为 'tts_voice'
+        msgData.type = 'tts_voice';
+        // 3. 并移除内容中的 [V] 前缀
+        msgData.content = msgData.content.replace('[V]', '').trim();
+    }                    
                     if (chat.isGroup && msgData.name && msgData.name === chat.name) {
                         console.error(`AI幻觉已被拦截！试图使用群名 ("${chat.name}") 作为角色名。消息内容:`, msgData);
                         continue;
@@ -40311,7 +40412,132 @@ function stopSilentAudio() {
 }
 
 // ▲▲▲ 新增函数粘贴结束 ▲▲▲
+// ▼▼▼ 【全新】这是语音消息 (TTS) 功能的【全部核心JS代码】，请完整粘贴 ▼▼▼
 
+/**
+ * 【总入口】当用户点击语音消息的播放按钮时触发
+ * @param {HTMLElement} bodyElement - 被点击的 .voice-message-body 元素
+ */
+async function playTtsAudio(bodyElement) {
+    const text = decodeURIComponent(bodyElement.dataset.text);
+    const voiceId = bodyElement.dataset.voiceId;
+    const button = bodyElement.querySelector('.voice-play-btn');
+    const spinner = bodyElement.querySelector('.voice-spinner');
+    
+    // 检查是否正在播放同一条语音
+    const ttsPlayer = document.getElementById('tts-audio-player');
+    if (!ttsPlayer.paused && ttsPlayer.dataset.currentText === text && ttsPlayer.dataset.currentVoiceId === voiceId) {
+        ttsPlayer.pause(); // 如果是，则暂停
+        return;
+    }
+
+    // 暂停任何可能正在播放的旧语音
+    ttsPlayer.pause();
+    
+    // 重置所有其他播放按钮的UI
+    document.querySelectorAll('.voice-play-btn').forEach(btn => btn.textContent = '▶');
+    
+    // 1. 检查缓存
+    const cacheKey = `tts_${voiceId}_${text}`;
+    let cachedAudio = state.ttsCache.get(cacheKey);
+
+    if (cachedAudio) {
+        console.log("从缓存播放 TTS 音频...");
+        await playAudioFromData(cachedAudio.url, cachedAudio.type, text, voiceId, button);
+        return;
+    }
+
+    // 2. 如果没有缓存，则调用API
+    console.log("无缓存，正在请求 Minimax TTS API...");
+    button.style.display = 'none';
+    spinner.style.display = 'block';
+
+    const { minimaxGroupId, minimaxApiKey } = state.apiConfig;
+    if (!minimaxGroupId || !minimaxApiKey) {
+        await showCustomAlert("配置错误", "请先在API设置中填写您的 Minimax Group ID 和 API Key。");
+        spinner.style.display = 'none';
+        button.style.display = 'flex';
+        return;
+    }
+
+    try {
+        const response = await fetch('https://api.minimax.chat/v1/text_to_speech', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${minimaxApiKey}`,
+                'Content-Type': 'application/json',
+                'GroupId': minimaxGroupId
+            },
+            body: JSON.stringify({
+                text: text,
+                voice_id: voiceId,
+                model: "speech-01",
+                timber_weights: [{"voice_id": voiceId, "weight": 1}]
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.base_resp?.status_msg || `API 返回错误: ${response.status}`);
+        }
+
+        const audioBlob = await response.blob();
+        
+        // 播放音频
+        const audioUrl = URL.createObjectURL(audioBlob);
+        await playAudioFromData(audioUrl, audioBlob.type, text, voiceId, button);
+
+        // 保存到缓存
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            state.ttsCache.set(cacheKey, { url: reader.result, type: audioBlob.type });
+            console.log("TTS 音频已保存到缓存。");
+        }
+        reader.readAsDataURL(audioBlob);
+
+    } catch (error) {
+        console.error("Minimax TTS API 调用失败:", error);
+        await showCustomAlert("语音生成失败", `错误: ${error.message}`);
+    } finally {
+        spinner.style.display = 'none';
+        button.style.display = 'flex';
+    }
+}
+
+/**
+ * 【辅助函数】从数据源播放音频并处理UI更新
+ */
+function playAudioFromData(audioSrc, audioType, text, voiceId, button) {
+    return new Promise((resolve, reject) => {
+        const ttsPlayer = document.getElementById('tts-audio-player');
+        
+        ttsPlayer.src = audioSrc;
+        ttsPlayer.type = audioType;
+        ttsPlayer.dataset.currentText = text;
+        ttsPlayer.dataset.currentVoiceId = voiceId;
+
+        const playPromise = ttsPlayer.play();
+
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                button.textContent = '❚❚'; // 播放中
+                resolve();
+            }).catch(error => {
+                console.error("音频播放失败:", error);
+                reject(error);
+            });
+        }
+
+        ttsPlayer.onended = () => {
+            button.textContent = '▶'; // 播放结束
+        };
+        ttsPlayer.onpause = () => {
+            button.textContent = '▶'; // 暂停
+        };
+    });
+}
+
+// ▲▲▲ 全新JS代码粘贴结束 ▲▲▲
 
 
 
@@ -40909,7 +41135,8 @@ messagesView.addEventListener('scroll', () => { // <--- 核心修改2：在 mess
             state.apiConfig.proxyUrl = document.getElementById('proxy-url').value.trim();
             state.apiConfig.apiKey = document.getElementById('api-key').value.trim();
             state.apiConfig.model = document.getElementById('model-select').value;
-            
+state.apiConfig.minimaxGroupId = document.getElementById('minimax-group-id').value.trim();
+state.apiConfig.minimaxApiKey = document.getElementById('minimax-api-key').value.trim();            
             // 【核心新增】保存副API
             state.apiConfig.secondaryProxyUrl = document.getElementById('secondary-proxy-url').value.trim();
             state.apiConfig.secondaryApiKey = document.getElementById('secondary-api-key').value.trim();
@@ -41043,6 +41270,11 @@ document.getElementById('save-world-book-btn').addEventListener('click', async (
 // ▲▲▲ 替换结束 ▲▲▲
         // ▼▼▼ 【最终修复版】请用这整块代码，完整替换旧的 chat-messages 事件监听器 ▼▼▼
         document.getElementById('chat-messages').addEventListener('click', async (e) => {
+    const ttsVoiceBody = e.target.closest('.voice-message-body[data-text]');
+    if (ttsVoiceBody) {
+        playTtsAudio(ttsVoiceBody);
+        return; // 处理完后直接退出，避免触发其他逻辑
+    }
             // 检查是否点击了 "查看详情" 按钮
             const detailsBtn = e.target.closest('.waimai-details-btn');
             if (detailsBtn) {
@@ -41284,6 +41516,7 @@ document.getElementById('save-world-book-btn').addEventListener('click', async (
             document.getElementById('ai-avatar-group').style.display = isGroup ? 'none' : 'block';
             document.getElementById('assign-group-section').style.display = isGroup ? 'none' : 'block';
             document.getElementById('ai-original-name-group').style.display = isGroup ? 'none' : 'block';
+            document.getElementById('ai-voice-id-group').style.display = isGroup ? 'none' : 'block';
             document.getElementById('offline-mode-group').style.display = isGroup ? 'none' : 'block';
             document.getElementById('ai-cooldown-group').style.display = isGroup ? 'none' : 'block';
             document.getElementById('group-cooldown-group').style.display = isGroup ? 'block' : 'none';
@@ -41354,6 +41587,7 @@ if (isGroup) {
     offlineMaxInput.value = chat.settings.offlineMaxLength || 300;
 await renderOfflinePresetSelector(chat);
     document.getElementById('ai-original-name-input').value = chat.originalName;
+document.getElementById('ai-voice-id-input').value = chat.settings.minimaxVoiceId || '';
     document.getElementById('ai-persona').value = chat.settings.aiPersona;
     document.getElementById('ai-avatar-preview').src = chat.settings.aiAvatar || defaultAvatar;
     document.getElementById('my-nickname-input').value = chat.settings.myNickname || '我';
@@ -41558,103 +41792,117 @@ document.getElementById('save-member-settings-btn').addEventListener('click', as
                     document.getElementById('reset-theme-btn').addEventListener('click', () => { document.getElementById('theme-default').checked = true; });
                    
         
-        // ▼▼▼ 【请用这个新版本】替换旧的 save-chat-settings-btn 事件监听器 ▼▼▼
-        document.getElementById('save-chat-settings-btn').addEventListener('click', async () => {
-            if (!state.activeChatId) return;
-            const chat = state.chats[state.activeChatId];
-            
-            // --- （这部分与之前相同，保持不变） ---
-            const newName = document.getElementById('chat-name-input').value.trim();
-            if (!newName) return alert('备注名/群名不能为空！');
-            if (!chat.isGroup && newName !== chat.name) {
-                if (!chat.nameHistory) chat.nameHistory = [];
-                if (!chat.nameHistory.includes(chat.name)) chat.nameHistory.push(chat.name);
-            }
-            chat.name = newName;
-            const selectedThemeRadio = document.querySelector('input[name="theme-select"]:checked');
-            chat.settings.theme = selectedThemeRadio ? selectedThemeRadio.value : 'default';
-            chat.settings.fontSize = parseInt(document.getElementById('font-size-slider').value);
-            chat.settings.customCss = document.getElementById('custom-css-input').value.trim();
-// 【新增代码】保存时间感知设置
-chat.settings.enableTimePerception = document.getElementById('time-perception-toggle').checked;
-chat.settings.timeZone = document.getElementById('time-zone-select').value;
+// ▼▼▼ 【最终修复版】请用这个全新的函数，完整替换旧的 'save-chat-settings-btn' 事件监听器 ▼▼▼
+document.getElementById('save-chat-settings-btn').addEventListener('click', async () => {
+    if (!state.activeChatId) return;
+    const chat = state.chats[state.activeChatId];
+    
+    // --- 捕获旧的线下模式状态 ---
+    const oldOfflineModeState = chat.settings.isOfflineMode || false;
 
-            chat.settings.myPersona = document.getElementById('my-persona').value;
-            chat.settings.myAvatar = document.getElementById('my-avatar-preview').src;
-        
-            // --- 【【【核心修改从这里开始】】】 ---
-            const checkedBookItems = document.querySelectorAll('#world-book-checkboxes-container input[type="checkbox"]:checked');
-            const newLinkedBookIds = [];
-        
-            checkedBookItems.forEach(cb => {
-                const value = cb.value;
-                // 我们只关心书籍的ID
-                if (value.startsWith('book_')) {
-                    newLinkedBookIds.push(value.replace('book_', ''));
-                }
-            });
-            
-            // 只保存单本书的ID
-            chat.settings.linkedWorldBookIds = newLinkedBookIds;
-            // 不再需要保存分类ID，将其从设置中移除以保持数据干净
-            delete chat.settings.linkedWorldBookCategoryIds; 
-            // --- 【【【核心修改到这里结束】】】 ---
-        
-// ▼▼▼ 请用这个【新版本】替换旧的 if/else 逻辑 ▼▼▼
-if (chat.isGroup) {
-    // 【核心新增】保存群聊的后台活动开关状态
-    chat.settings.enableBackgroundActivity = document.getElementById('group-background-activity-switch').checked;
-    chat.settings.myNickname = document.getElementById('my-group-nickname-input').value.trim();
-    chat.settings.groupAvatar = document.getElementById('group-avatar-preview').src;
-    chat.settings.actionCooldownMinutes = parseInt(document.getElementById('group-action-cooldown-input').value) || 10;
-} else {
-    // 【核心新增】保存单个角色的后台活动开关状态
-    chat.settings.enableBackgroundActivity = document.getElementById('char-background-activity-switch').checked;
+    // --- (所有其他设置的保存逻辑保持不变) ---
+    const newName = document.getElementById('chat-name-input').value.trim();
+    if (!newName) return alert('备注名/群名不能为空！');
+    if (!chat.isGroup && newName !== chat.name) {
+        if (!chat.nameHistory) chat.nameHistory = [];
+        if (!chat.nameHistory.includes(chat.name)) chat.nameHistory.push(chat.name);
+    }
+    chat.name = newName;
+    const selectedThemeRadio = document.querySelector('input[name="theme-select"]:checked');
+    chat.settings.theme = selectedThemeRadio ? selectedThemeRadio.value : 'default';
+    chat.settings.fontSize = parseInt(document.getElementById('font-size-slider').value);
+    chat.settings.customCss = document.getElementById('custom-css-input').value.trim();
+    chat.settings.myPersona = document.getElementById('my-persona').value;
+    chat.settings.myAvatar = document.getElementById('my-avatar-preview').src;
+    chat.settings.maxMemory = parseInt(document.getElementById('max-memory').value) || 10;
+    chat.settings.linkedMemoryCount = parseInt(document.getElementById('linked-memory-count').value) || 10;
+    
+    const checkedBookItems = document.querySelectorAll('#world-book-checkboxes-container input[type="checkbox"]:checked');
+    const newLinkedBookIds = [];
+    checkedBookItems.forEach(cb => {
+        if (cb.value.startsWith('book_')) {
+            newLinkedBookIds.push(cb.value.replace('book_', ''));
+        }
+    });
+    chat.settings.linkedWorldBookIds = newLinkedBookIds;
+    
+    const linkMemoryToggleChecked = document.getElementById('link-memory-toggle').checked;
+    if (linkMemoryToggleChecked) {
+        const checkedChats = document.querySelectorAll('#linked-chats-checkboxes-container input:checked');
+        chat.settings.linkedMemoryChatIds = Array.from(checkedChats).map(cb => cb.value);
+    } else {
+        chat.settings.linkedMemoryChatIds = [];
+    }
+    chat.settings.enableAutoMemory = document.getElementById('auto-memory-toggle').checked;
+    chat.settings.autoMemoryInterval = parseInt(document.getElementById('auto-memory-interval').value) || 20;
+    chat.settings.enableTimePerception = document.getElementById('time-perception-toggle').checked;
+    chat.settings.timeZone = document.getElementById('time-zone-select').value;
+    
+    if (chat.isGroup) {
+        chat.settings.enableBackgroundActivity = document.getElementById('group-background-activity-switch').checked;
+        chat.settings.myNickname = document.getElementById('my-group-nickname-input').value.trim();
+        chat.settings.groupAvatar = document.getElementById('group-avatar-preview').src;
+        chat.settings.actionCooldownMinutes = parseInt(document.getElementById('group-action-cooldown-input').value) || 10;
+    } else {
+        chat.settings.enableBackgroundActivity = document.getElementById('char-background-activity-switch').checked;
+        const newOfflineModeState = document.getElementById('offline-mode-toggle').checked;
+        chat.settings.isOfflineMode = newOfflineModeState;
 
-    // (其他单聊设置的保存逻辑保持不变)
-    chat.settings.isOfflineMode = document.getElementById('offline-mode-toggle').checked;
-    chat.settings.offlineMinLength = parseInt(document.getElementById('offline-min-length-input').value) || 100;
-    chat.settings.offlineMaxLength = parseInt(document.getElementById('offline-max-length-input').value) || 300;
-    chat.settings.offlinePresetId = document.getElementById('offline-preset-select').value || null;
-    const newOriginalName = document.getElementById('ai-original-name-input').value.trim();
-    if (!newOriginalName) return alert('对方本名不能为空！');
-    chat.originalName = newOriginalName;
-    chat.settings.aiPersona = document.getElementById('ai-persona').value;
-    chat.settings.aiAvatar = document.getElementById('ai-avatar-preview').src;
-    chat.settings.myNickname = document.getElementById('my-nickname-input').value.trim() || '我';
-    chat.settings.actionCooldownMinutes = parseInt(document.getElementById('ai-action-cooldown-input').value) || 10;
-    chat.settings.lyricsPosition = {
-        vertical: document.getElementById('lyrics-vertical-pos').value,
-        horizontal: document.getElementById('lyrics-horizontal-pos').value,
-        offset: parseInt(document.getElementById('lyrics-offset-input').value) || 10
-    };
-    const selectedGroupId = document.getElementById('assign-group-select').value;
-    chat.groupId = selectedGroupId ? parseInt(selectedGroupId) : null;
-}
+        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+        //            这就是本次修复的核心所在！
+        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+        
+        // 1. 检查是否是从“线下(true)”切换到了“线上(false)”
+        if (oldOfflineModeState === true && newOfflineModeState === false) {
+            
+            // 2. 如果是，就创建一个对用户隐藏的系统指令
+            const switchInstruction = {
+                role: 'system',
+                content: '[系统指令：模式已切换！你现在回到了线上聊天模式。你的回复【必须】严格遵守线上模式的JSON数组格式，例如 [{"type": "text", "content": "你好"}]]',
+                timestamp: Date.now(),
+                isHidden: true // 这个标记确保用户看不到这条指令，但AI能读到
+            };
+            
+            // 3. 将这条指令注入到聊天记录的末尾
+            chat.history.push(switchInstruction);
+            console.log("已成功注入“切换到线上模式”的系统指令。");
+        }
+        
+        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+        
+        chat.settings.offlineMinLength = parseInt(document.getElementById('offline-min-length-input').value) || 100;
+        chat.settings.offlineMaxLength = parseInt(document.getElementById('offline-max-length-input').value) || 300;
+        chat.settings.offlinePresetId = document.getElementById('offline-preset-select').value || null;
+        
+        const newOriginalName = document.getElementById('ai-original-name-input').value.trim();
+        if (!newOriginalName) return alert('对方本名不能为空！');
+        chat.originalName = newOriginalName;
+        chat.settings.aiPersona = document.getElementById('ai-persona').value;
+        chat.settings.minimaxVoiceId = document.getElementById('ai-voice-id-input').value.trim();
+        chat.settings.aiAvatar = document.getElementById('ai-avatar-preview').src;
+        chat.settings.myNickname = document.getElementById('my-nickname-input').value.trim() || '我';
+        chat.settings.actionCooldownMinutes = parseInt(document.getElementById('ai-action-cooldown-input').value) || 10;
+        chat.settings.lyricsPosition = {
+            vertical: document.getElementById('lyrics-vertical-pos').value,
+            horizontal: document.getElementById('lyrics-horizontal-pos').value,
+            offset: parseInt(document.getElementById('lyrics-offset-input').value) || 10
+        };
+        const selectedGroupId = document.getElementById('assign-group-select').value;
+        chat.groupId = selectedGroupId ? parseInt(selectedGroupId) : null;
+    }
+
+    await db.chats.put(chat);
+    if (!chat.isGroup) {
+        await syncCharacterNameInGroups(chat);
+        await syncCharacterAvatarInGroups(chat);
+    }
+    applyLyricsBarPosition(chat);
+    applyScopedCss(chat.settings.customCss, '#chat-messages', 'custom-bubble-style');
+    showScreen('chat-interface-screen');
+    renderChatInterface(state.activeChatId);
+    renderChatList();
+});
 // ▲▲▲ 替换结束 ▲▲▲
-            chat.settings.maxMemory = parseInt(document.getElementById('max-memory').value) || 10;
-            chat.settings.linkedMemoryCount = parseInt(document.getElementById('linked-memory-count').value) || 10;
-            const linkMemoryToggleChecked = document.getElementById('link-memory-toggle').checked;
-            if (linkMemoryToggleChecked) {
-                const checkedChats = document.querySelectorAll('#linked-chats-checkboxes-container input:checked');
-                chat.settings.linkedMemoryChatIds = Array.from(checkedChats).map(cb => cb.value);
-            } else {
-                chat.settings.linkedMemoryChatIds = [];
-            }
-            chat.settings.enableAutoMemory = document.getElementById('auto-memory-toggle').checked;
-            chat.settings.autoMemoryInterval = parseInt(document.getElementById('auto-memory-interval').value) || 20;
-            await db.chats.put(chat);
-            if (!chat.isGroup) {
-                await syncCharacterNameInGroups(chat);
-                await syncCharacterAvatarInGroups(chat);
-            }
-            applyLyricsBarPosition(chat);
-            applyScopedCss(chat.settings.customCss, '#chat-messages', 'custom-bubble-style');
-            showScreen('chat-interface-screen');
-            renderChatInterface(state.activeChatId);
-            renderChatList();
-        });
-        // ▲▲▲ 替换结束 ▲▲▲
         
         // ▼▼▼ 【这是最终的完整功能代码，请用它替换掉旧的】 ▼▼▼
         
@@ -45508,5 +45756,6 @@ chatListContainer.addEventListener('scroll', () => {
     <source src="https://phoebeboo.github.io/mewoooo/1-second-of-silence.mp3" type="audio/mpeg">
 </audio>
 <!-- ▲▲▲ 新增代码粘贴结束 ▲▲▲ -->
+<audio id="tts-audio-player" style="display:none;"></audio>
 </body>
 </html>
