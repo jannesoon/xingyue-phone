@@ -8,9 +8,7 @@
     <!-- 1. (核心) 为苹果设备设置主屏幕图标 -->
     <!-- 浏览器会自动选择最合适的尺寸 -->
     <link rel="apple-touch-icon" href="https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1758510900942_qdqqd_djw0z2.jpeg">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1758510900942_qdqqd_djw0z2.jpeg">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1758510900942_qdqqd_djw0z2.jpeg">
-    <link rel="apple-touch-icon" sizes="167x167" href="https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1758510900942_qdqqd_djw0z2.jpeg">
+
     <link rel="manifest" href="manifest.json">
     <!-- 2. (核心) 告诉苹果设备，这是一个Web应用，可以全屏显示 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,9 +23,10 @@
     <!-- ▲▲▲ 粘贴结束 ▲▲▲ -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://unpkg.com/dexie/dist/dexie.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
      <script src="https://phoebeboo.github.io/mewoooo/pp.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/streamsaver@2.0.6/StreamSaver.min.js" defer></script>
     <style>
         @font-face { font-family: 'bulangni'; src: url('') format('truetype'); font-weight: normal; font-style: normal; font-display: swap; }
         :root { --screen-width: 350px; --screen-height: 650px; --secondary-bg: #ffffff; --border-color: #e0e0e0; --text-primary: #1f1f1f; --text-secondary: #8a8a8a; --accent-color: #007bff; }
@@ -10183,9 +10182,94 @@ input, textarea, select {
 }
 
 /* ▲▲▲ 新增CSS粘贴结束 ▲▲▲ */
+/* ▼▼▼ 【全新】头像框批量删除功能样式 ▼▼▼ */
 
+/* 1. 管理模式下，为头像框网格添加一个class，用于样式控制 */
+#avatar-frame-modal .frame-grid.management-mode .frame-item {
+    cursor: pointer;
+}
 
+/* 2. 管理模式下，为自定义头像框添加一个选中框的伪元素 */
+/*    注意：我们只为带有 .delete-btn 的自定义头像框添加可选效果 */
+#avatar-frame-modal .frame-grid.management-mode .frame-item:has(.delete-btn)::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    border: 3px solid transparent;
+    border-radius: 12px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    pointer-events: none; /* 确保不影响点击 */
+}
+
+/* 3. 管理模式下，被选中的自定义头像框，显示蓝色边框 */
+#avatar-frame-modal .frame-grid.management-mode .frame-item.selected::after {
+    border-color: var(--accent-color);
+}
+
+/* 4. 底部批量删除操作栏 (复用已有样式) */
+#frame-action-bar {
+    display: none; /* 默认隐藏 */
+    flex-shrink: 0;
+    padding: 10px 15px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    background-color: rgba(247, 247, 247, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border-color);
+    justify-content: space-between;
+    align-items: center;
+}
+
+#frame-action-bar .select-all-label {
+    font-size: 16px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+#frame-action-bar .action-bar-btn {
+    padding: 10px 25px;
+    border-radius: 20px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #ff3b30;
+    color: white;
+}
 /* ▲▲▲ 新增CSS粘贴结束 ▲▲▲ */
+/* ▼▼▼ 【全新】这是为备忘录收藏功能添加的样式 ▼▼▼ */
+
+/* 收藏按钮激活时的样式（填充黄色） */
+#favorite-memo-btn.active svg {
+    fill: #ffc107; /* 您可以换成任何您喜欢的颜色 */
+    color: #ffc107;
+}
+
+/* 收藏卡片中备忘录标题的样式 */
+.favorite-item-card .memo-title {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+/* 收藏卡片中备忘录内容预览的样式 */
+.favorite-item-card .memo-content-preview {
+    font-size: 13px;
+    opacity: 0.8;
+    line-height: 1.6;
+    
+    /* 多行省略号效果 */
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* 最多显示3行 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
     </style>
 </head>
 <body>
@@ -10221,12 +10305,12 @@ input, textarea, select {
                             <img id="profile-avatar-img" src="https://i.postimg.cc/y8xWzCqj/anime-boy.jpg" class="editable-image">
                         </div>
                         <div class="profile-info">
-                            <p id="profile-username" class="editable-text">@ insonneve 🪦</p>
-                            <p id="profile-sub-username" class="editable-text">@ insonneve</p>
-                            <p id="profile-bio" class="editable-text">你好像过得很好 迫不及待的抹去我存在的痕迹</p>
+                            <p id="profile-username" class="editable-text">星月传奇</p>
+                            <p id="profile-sub-username" class="editable-text">@柒柒Angel＆逸辰Ethan</p>
+                            <p id="profile-bio" class="editable-text">你在我怀里，就已经是世界最温暖的地方了</p>
                             <p id="profile-location" class="editable-text">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5-1.12 2.5-2.5 2.5z"></path></svg>
-                                <span>北海道</span>
+                                <span>星月舱</span>
                             </p>
                         </div>
                     </div>
@@ -10536,8 +10620,14 @@ input, textarea, select {
         <span class="back-btn" id="char-memo-detail-back-btn">‹</span>
         <!-- 这里会动态显示备忘录的标题 -->
         <span id="char-memo-detail-title"></span>
-        <!-- 右上角的占位符，保持标题居中 -->
-        <span style="width: 80px;"></span>
+        <!-- 【【【核心新增：在这里添加收藏按钮】】】 -->
+        <div class="header-actions">
+            <span class="action-btn" id="favorite-memo-btn" title="收藏">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+            </span>
+        </div>
     </div>
     <!-- 这个容器将用来显示备忘录的完整内容 -->
     <div class="form-container" style="padding: 0;">
@@ -13627,6 +13717,7 @@ let activeCharacterId = null; // 用于跟踪当前正在查看的CphoneID
 let editingMemoId = null;
 let editingDiaryId = null;
 let activeDiaryForViewing = null; // 用于暂存当前正在查看的日记对象
+let activeMemoForViewing = null; // <-- 在这里添加新变量
         // ▼▼▼ 在下方粘贴新变量 ▼▼▼
         let shoppingCart = []; // 数据结构将变为 [{ productId: 123, quantity: 1 }, ...]
         let editingProductId = null; // 用于存储正在编辑的商品ID
@@ -15448,7 +15539,24 @@ for (const post of postsToAppend) {
                 <span class="diary-title">${diary.title}</span>
                 <div class="fav-card-content-full">${formattedContent}</div>
             `;
-        }     
+        }  
+// ▼▼▼ 【全新】在这里粘贴下面的新代码 ▼▼▼
+else if (item.type === 'char_memo') {
+    const memo = item.content;
+    sourceText = `来自 ${memo.characterName} 的备忘录`;
+
+    const charChat = state.chats[memo.characterId];
+    const authorAvatar = charChat ? charChat.settings.aiAvatar : defaultAvatar;
+    
+    headerHtml = `<img src="${authorAvatar}" class="avatar"><div class="info"><div class="name">${memo.characterName}</div></div>`;
+    
+    // 使用我们新添加的CSS类来渲染标题和内容预览
+    contentHtml = `
+        <span class="memo-title">${memo.title}</span>
+        <div class="memo-content-preview">${memo.content.replace(/\n/g, '<br>')}</div>
+    `;
+}
+// ▲▲▲ 粘贴结束 ▲▲▲   
                 // ▼▼▼ 修改最终的HTML拼接，加入 footerHtml ▼▼▼
                 card.innerHTML = `
                     <div class="fav-card-header">${headerHtml}<div class="source">${sourceText}</div></div>
@@ -15731,86 +15839,133 @@ async function cleanupRedundantData() {
                 await showCustomAlert('导出失败', `发生了一个错误: ${error.message}`);
             }
         }
-        
-        // ▼▼▼ 【这是导入函数修复版】 ▼▼▼
-        async function importBackup(file) {
-            if (!file) return;
-        
-            const confirmed = await showCustomConfirm(
-                '严重警告！',
-                '导入备份将完全覆盖您当前的所有数据，包括聊天、动态、设置等。此操作不可撤销！您确定要继续吗？',
-                { confirmButtonClass: 'btn-danger' }
-            );
-        
-            if (!confirmed) return;
-        
-            try {
-                const text = await file.text();
-                const data = JSON.parse(text);
-        
-                await db.transaction('rw', db.tables, async () => {
-                    for (const table of db.tables) {
-                        await table.clear();
-                    }
-        
-                    if (Array.isArray(data.chats)) await db.chats.bulkPut(data.chats);
-                    // ▼▼▼ 【全新】世界书旧版本数据兼容代码 ▼▼▼
-                    if (data.worldBooks && Array.isArray(data.worldBooks)) {
-                        console.log("正在检查世界书数据格式以确保兼容性...");
-                        data.worldBooks.forEach(book => {
-                            if (typeof book.content === 'string') {
-                                console.log(`检测到旧格式的世界书: "${book.name}"，正在自动迁移...`);
-                                const oldContentString = book.content;
-                                book.content = [{
-                                    keys: [], 
-                                    comment: "从旧版本自动迁移的条目",
-                                    content: oldContentString,
-                                    enabled: true 
-                                }];
-                            }
-                        });
-                    }
-                    // ▲▲▲ 代码粘贴结束 ▲▲▲
-                    if (Array.isArray(data.worldBooks)) await db.worldBooks.bulkPut(data.worldBooks);
-                    if (Array.isArray(data.worldBookCategories)) await db.worldBookCategories.bulkPut(data.worldBookCategories);
-                    if (Array.isArray(data.userStickers)) await db.userStickers.bulkPut(data.userStickers);
-                    if (Array.isArray(data.personaPresets)) await db.personaPresets.bulkPut(data.personaPresets);
-                    if (Array.isArray(data.qzonePosts)) await db.qzonePosts.bulkPut(data.qzonePosts);
-                    if (Array.isArray(data.qzoneAlbums)) await db.qzoneAlbums.bulkPut(data.qzoneAlbums);
-                    if (Array.isArray(data.qzonePhotos)) await db.qzonePhotos.bulkPut(data.qzonePhotos);
-                    if (Array.isArray(data.favorites)) await db.favorites.bulkPut(data.favorites);
-                    if (Array.isArray(data.qzoneGroups)) await db.qzoneGroups.bulkPut(data.qzoneGroups);
-                    if (Array.isArray(data.memories)) await db.memories.bulkPut(data.memories);
-                    if (Array.isArray(data.apiPresets)) await db.apiPresets.bulkPut(data.apiPresets);
-                    if (Array.isArray(data.shoppingProducts)) await db.shoppingProducts.bulkPut(data.shoppingProducts);
-                    if (Array.isArray(data.callRecords)) await db.callRecords.bulkPut(data.callRecords);
-                    if (Array.isArray(data.renderingRules)) await db.renderingRules.bulkPut(data.renderingRules);
-        
-                    // ▼▼▼ 在这里添加新代码 ▼▼▼
-                    if (Array.isArray(data.doubanPosts)) await db.doubanPosts.bulkPut(data.doubanPosts);
-                    // ▲▲▲ 新代码粘贴结束 ▲▲▲
-                   if (Array.isArray(data.stickerCategories)) await db.stickerCategories.bulkPut(data.stickerCategories);
-	   if (Array.isArray(data.appearancePresets)) await db.appearancePresets.bulkPut(data.appearancePresets);
-                    if (Array.isArray(data.presets)) await db.presets.bulkPut(data.presets);                         // <-- 【本次新增修复】
-                    if (Array.isArray(data.presetCategories)) await db.presetCategories.bulkPut(data.presetCategories);
-    if (Array.isArray(data.npcs)) await db.npcs.bulkPut(data.npcs);
-                    if (data.apiConfig) await db.apiConfig.put(data.apiConfig);
-                    if (data.globalSettings) await db.globalSettings.put(data.globalSettings);
-                    if (data.musicLibrary) await db.musicLibrary.put(data.musicLibrary);
-                    if (data.qzoneSettings) await db.qzoneSettings.put(data.qzoneSettings);
-                });
-        
-                await showCustomAlert('导入成功', '所有数据已成功恢复！应用即将刷新以应用所有更改。');
-                
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-        
-            } catch (error) {
-                console.error("导入数据时出错:", error);
-                await showCustomAlert('导入失败', `文件格式不正确或数据已损坏: ${error.message}`);
+// ▼▼▼ 【全新】这是专门用于导入“流式备份”文件的核心函数，请完整粘贴 ▼▼▼
+
+/**
+ * 【全新】处理新版流式备份文件的导入逻辑
+ * @param {object} backupData - 从流式备份文件 .data 字段中解析出的数据对象
+ */
+async function importStreamedBackup(backupData) {
+    try {
+        await db.transaction('rw', db.tables, async () => {
+            // 1. 清空所有现有数据
+            for (const table of db.tables) {
+                await table.clear();
             }
+
+            // 2. 遍历备份数据中的所有表，并批量导入
+            for (const tableName in backupData) {
+                if (Array.isArray(backupData[tableName])) {
+                    console.log(`正在导入表: ${tableName}, 记录数: ${backupData[tableName].length}`);
+                    await db.table(tableName).bulkPut(backupData[tableName]);
+                }
+            }
+        });
+
+    } catch (error) {
+        // 如果在事务中发生任何错误，直接向上抛出
+        throw new Error(`数据库写入失败: ${error.message}`);
+    }
+}
+
+// ▲▲▲ 新增函数粘贴结束 ▲▲▲        
+// ▼▼▼ 【最终解决方案】请用这一整块全新的代码，完整替换旧的 importBackup 函数 ▼▼▼
+
+/**
+ * 【智能总管 | V2.0】处理文件导入，自动识别备份文件版本
+ * @param {File} file - 用户选择的 .json 备份文件
+ */
+async function handleSmartImport(file) {
+    if (!file) return;
+
+    const confirmed = await showCustomConfirm(
+        '严重警告！',
+        '导入备份将完全覆盖您当前的所有数据。此操作不可撤销！确定要继续吗？',
+        { confirmButtonClass: 'btn-danger' }
+    );
+    if (!confirmed) return;
+
+    await showCustomAlert("请稍候...", "正在读取并解析备份文件...");
+
+    try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        // --- 核心识别逻辑 ---
+        // 检查是否是新的、带 "data" 包装的流式备份
+        if (data.data && typeof data.data === 'object' && data.data.chats) {
+            console.log("检测到新版流式备份文件，开始导入...");
+            await importStreamedBackup(data.data); // 调用新函数，并传入核心数据
         }
+        // 否则，检查是否是旧的、扁平结构的备份
+        else if (data.chats) {
+            console.log("检测到旧版完整备份文件，开始导入...");
+            await importLegacyBackup(data); // 调用改造后的旧函数
+        }
+        // 如果两种都不是
+        else {
+            throw new Error("文件格式无法识别。请确保您选择的是有效的 EPhone 备份文件。");
+        }
+
+        // --- 导入成功后的统一处理 ---
+        await showCustomAlert('导入成功', '所有数据已成功恢复！应用即将刷新以应用所有更改。');
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+
+    } catch (error) {
+        console.error("导入数据时出错:", error);
+        await showCustomAlert('导入失败', `文件解析或应用失败: ${error.message}`);
+    }
+}
+
+/**
+ * 【改造后】处理旧版备份文件的导入逻辑
+ * @param {object} backupData - 从旧版备份文件解析出的数据对象
+ */
+async function importLegacyBackup(backupData) {
+    try {
+        await db.transaction('rw', db.tables, async () => {
+            await db.chats.clear();
+            await db.worldBooks.clear();
+            // ... (为所有表添加 .clear() 调用)
+            for (const table of db.tables) {
+                await table.clear();
+            }
+
+            if (Array.isArray(backupData.chats)) await db.chats.bulkPut(backupData.chats);
+            if (Array.isArray(backupData.worldBooks)) await db.worldBooks.bulkPut(backupData.worldBooks);
+            // ... (为所有表添加 .bulkPut() 调用，这部分逻辑与您旧的 importBackup 函数完全相同)
+            if (Array.isArray(backupData.userStickers)) await db.userStickers.bulkPut(backupData.userStickers);
+            if (backupData.apiConfig) await db.apiConfig.put(backupData.apiConfig);
+            if (backupData.globalSettings) await db.globalSettings.put(backupData.globalSettings);
+            // ... (请确保这里包含了所有表的导入逻辑)
+             if (Array.isArray(backupData.personaPresets)) await db.personaPresets.bulkPut(backupData.personaPresets);
+            if (backupData.musicLibrary) await db.musicLibrary.put(backupData.musicLibrary);
+            if (backupData.qzoneSettings) await db.qzoneSettings.put(backupData.qzoneSettings);
+            if (Array.isArray(backupData.qzonePosts)) await db.qzonePosts.bulkPut(backupData.qzonePosts);
+            if (Array.isArray(backupData.qzoneAlbums)) await db.qzoneAlbums.bulkPut(backupData.qzoneAlbums);
+            if (Array.isArray(backupData.qzonePhotos)) await db.qzonePhotos.bulkPut(backupData.qzonePhotos);
+            if (Array.isArray(backupData.favorites)) await db.favorites.bulkPut(backupData.favorites);
+            if (Array.isArray(backupData.qzoneGroups)) await db.qzoneGroups.bulkPut(backupData.qzoneGroups);
+            if (Array.isArray(backupData.memories)) await db.memories.bulkPut(backupData.memories);
+            if (Array.isArray(backupData.worldBookCategories)) await db.worldBookCategories.bulkPut(backupData.worldBookCategories);
+            if (Array.isArray(backupData.apiPresets)) await db.apiPresets.bulkPut(backupData.apiPresets);
+            if (Array.isArray(backupData.shoppingProducts)) await db.shoppingProducts.bulkPut(backupData.shoppingProducts);
+            if (Array.isArray(backupData.callRecords)) await db.callRecords.bulkPut(backupData.callRecords);
+            if (Array.isArray(backupData.renderingRules)) await db.renderingRules.bulkPut(backupData.renderingRules);
+            if (Array.isArray(backupData.doubanPosts)) await db.doubanPosts.bulkPut(backupData.doubanPosts);
+            if (Array.isArray(backupData.stickerCategories)) await db.stickerCategories.bulkPut(backupData.stickerCategories);
+            if (Array.isArray(backupData.appearancePresets)) await db.appearancePresets.bulkPut(backupData.appearancePresets);
+            if (Array.isArray(backupData.presets)) await db.presets.bulkPut(backupData.presets);
+            if (Array.isArray(backupData.presetCategories)) await db.presetCategories.bulkPut(backupData.presetCategories);
+            if (Array.isArray(backupData.npcs)) await db.npcs.bulkPut(backupData.npcs);
+        });
+    } catch (error) {
+        throw new Error(`旧版备份数据写入数据库失败: ${error.message}`);
+    }
+}
+// ▲▲▲ 替换结束 ▲▲▲
         
                 function applyCustomFont(fontUrl, isPreviewOnly = false) {
                     if (!fontUrl) {
@@ -16018,6 +16173,32 @@ async function loadAllDataFromDB() {
                 async function saveGlobalPlaylist() { await db.musicLibrary.put({ id: 'main', playlist: musicState.playlist }); }
         
                 function formatTimestamp(timestamp) { if (!timestamp) return ''; const date = new Date(timestamp); const hours = String(date.getHours()).padStart(2, '0'); const minutes = String(date.getMinutes()).padStart(2, '0'); return `${hours}:${minutes}`; }
+/**
+ * 【全新】将时间戳转换为“xx前”的相对时间格式
+ * @param {number} timestamp - 过去的时间戳
+ * @returns {string} - 格式化后的相对时间字符串，例如 "5分钟前", "3天前"
+ */
+function formatTimeAgo(timestamp) {
+    const now = Date.now();
+    const seconds = Math.floor((now - timestamp) / 1000);
+
+    if (seconds < 60) return '刚刚';
+    
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}分钟前`;
+    
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}小时前`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days}天前`;
+
+    const months = Math.floor(days / 30);
+    if (months < 12) return `大约${months}个月前`;
+
+    const years = Math.floor(days / 365);
+    return `大约${years}年前`;
+}
 /**
  * 【全新 V2.0 | 智能日期感知版】为AI上下文格式化时间戳
  * @param {number} timestamp - 消息的时间戳
@@ -18326,24 +18507,33 @@ async function triggerSpectatorGroupAiAction() {
                 return formattedEntries ? `\n\n## 世界书: ${worldBook.name}\n${formattedEntries}` : '';
             }).filter(Boolean).join('');
             if (linkedContents) {
-                worldBookContent = `\n\n# 核心世界观设定 (群内所有角色都必须严格遵守)\n${linkedContents}\n`;
+                worldBookContent = `# --- 世界书 (World Book) ---
+# 【最高优先级规则：世界观设定】
+# 你【必须】将以下所有“世界书”中的设定，视为绝对的、不可动摇的背景事实。
+# 你的所有回复和行为都【绝对不能】与这些设定产生任何冲突。
+${linkedContents}
+# --- 世界书设定结束 ---
+`;
             }
         }
         
         // b. 收集长期记忆
-        let longTermMemoryContext = '# 长期记忆 (最高优先级，这是群内已经确立的事实，所有角色必须严格遵守)\n';
-        let collectedMemories = false;
-        chat.members.forEach(member => {
-            const memberChat = state.chats[member.id];
-            if (memberChat && memberChat.longTermMemory && memberChat.longTermMemory.length > 0) {
-                longTermMemoryContext += `\n## --- 关于“${member.groupNickname}”的记忆 ---\n`;
-                longTermMemoryContext += memberChat.longTermMemory.map(mem => `- ${mem.content}`).join('\n');
-                collectedMemories = true;
-            }
-        });
-        if (!collectedMemories) {
-            longTermMemoryContext += '- (暂无)';
-        }
+let longTermMemoryContext = '# 长期记忆 (最高优先级，这是群内已经确立的事实，所有角色必须严格遵守)\n';
+let collectedMemories = false;
+
+chat.members.forEach(member => {
+    const memberChat = state.chats[member.id];
+    if (memberChat && memberChat.longTermMemory && memberChat.longTermMemory.length > 0) {
+        longTermMemoryContext += `\n## --- 关于“${member.groupNickname}”的记忆 ---\n`;
+        // ★★★ 核心修改就在这里！ ★★★
+        longTermMemoryContext += memberChat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n');
+        collectedMemories = true;
+    }
+});
+
+if (!collectedMemories) {
+    longTermMemoryContext += '- (暂无)';
+}
 
         // c. 收集挂载记忆
         let linkedMemoryContext = '';
@@ -18819,7 +19009,13 @@ ${transcriptText}
                     }).filter(Boolean).join('');
                     
                     if (linkedContents) {
-                        worldBookContent = `\n\n# 核心世界观设定 (必须严格遵守以下所有设定)\n${linkedContents}\n`;
+                        worldBookContent = `# --- 世界书 (World Book) ---
+# 【最高优先级规则：世界观设定】
+# 你【必须】将以下所有“世界书”中的设定，视为绝对的、不可动摇的背景事实。
+# 你的所有回复和行为都【绝对不能】与这些设定产生任何冲突。
+${linkedContents}
+# --- 世界书设定结束 ---
+`;
                     }
                 }
         // ▼▼▼ 【这是最终的歌词感知修复版】请用这整块代码，替换旧的 musicContext 构建逻辑 ▼▼▼
@@ -18979,21 +19175,22 @@ ${transcriptText}
                 }
 // ▲▲▲ 修复代码粘贴结束 ▲▲▲
              // ▼▼▼ 核心修改：在这里构建跨角色的长期记忆上下文 ▼▼▼
-            let longTermMemoryContext = '# 长期记忆 (最高优先级，这是群内已经确立的事实，所有角色必须严格遵守)\n';
-            let collectedMemories = false;
-            
-            chat.members.forEach(member => {
-                const memberChat = state.chats[member.id];
-                if (memberChat && memberChat.longTermMemory && memberChat.longTermMemory.length > 0) {
-                    longTermMemoryContext += `\n## --- 关于“${member.groupNickname}”的记忆 ---\n`;
-                    longTermMemoryContext += memberChat.longTermMemory.map(mem => `- ${mem.content}`).join('\n');
-                    collectedMemories = true;
-                }
-            });
+let longTermMemoryContext = '# 长期记忆 (最高优先级，这是群内已经确立的事实，所有角色必须严格遵守)\n';
+let collectedMemories = false;
 
-            if (!collectedMemories) {
-                longTermMemoryContext += '- (暂无)';
-            }
+chat.members.forEach(member => {
+    const memberChat = state.chats[member.id];
+    if (memberChat && memberChat.longTermMemory && memberChat.longTermMemory.length > 0) {
+        longTermMemoryContext += `\n## --- 关于“${member.groupNickname}”的记忆 ---\n`;
+        // ★★★ 核心修改就在这里！ ★★★
+        longTermMemoryContext += memberChat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n');
+        collectedMemories = true;
+    }
+});
+
+if (!collectedMemories) {
+    longTermMemoryContext += '- (暂无)';
+}
             // ▲▲▲ 修改结束 ▲▲▲
 // 【V2.0 | 智能日期感知版 for Group】
 let timeContextText = '';
@@ -19130,7 +19327,7 @@ ${membersWithContacts}
 # 用户的角色
 - **${myNickname}**: ${chat.settings.myPersona}
 
-# 可用资源与上下文
+# 世界观 (所有角色必须严格遵守)
 ${worldBookContent}
 # 长期记忆 (所有角色必须严格遵守)
 ${longTermMemoryContext}
@@ -19695,7 +19892,8 @@ ${chat.settings.myPersona}
 # 当前情景
 ${chat.settings.enableTimePerception ? `- **当前时间**: ${currentTime} (${timeOfDayGreeting})` : ''}
 ${timeContext}
-你必须严格遵守${worldBookContent}
+# 世界观 (必须严格遵守)
+${worldBookContent}
 ${linkedMemoryContext}
 # 长期记忆 (必须严格遵守)
 ${chat.longTermMemory && chat.longTermMemory.length > 0 ? chat.longTermMemory.map(mem => `- ${mem.content}`).join('\n') : '- (暂无)'}
@@ -20122,7 +20320,7 @@ case 'update_thoughts':
         };
 
         // 3. 将这条“记忆碎片”也存入聊天记录
-        chat.history.push(hiddenThoughtMessage);
+       // chat.history.push(hiddenThoughtMessage);
         // --- 【【【修改结束】】】 ---
     }
     continue;
@@ -21875,12 +22073,45 @@ async function runBackgroundSimulationTick() {
             }
             if (Math.random() > 0.3) continue;
 
-            const tasks = allRecentPosts.filter(post => {
-                const isAssociated = npc.associatedWith.includes(post.authorId);
+// ▼▼▼ 在 runBackgroundSimulationTick 函数中，找到 const tasks = ... 并用下面这整块替换 ▼▼▼
+            const tasks = [];
+            for (const post of allRecentPosts) {
+                // 检查是否是自己发的，如果是则跳过
+                if (post.authorId === `npc_${npc.id}`) continue;
+
+                // 检查是否是回复给自己的
                 const isRepliedTo = post.comments?.some(c => c.replyTo === npc.name);
+                
+                // 检查最后一条评论是不是自己发的，避免重复评论
                 const lastCommenter = post.comments?.slice(-1)[0]?.commenterName;
-                return (isAssociated || isRepliedTo) && lastCommenter !== npc.name;
-            });
+                if(lastCommenter === npc.name) continue;
+
+                let isVisible = false;
+
+                // 判断1: 帖子作者是用户或AI角色
+                if (post.authorId === 'user' || post.authorId.startsWith('chat_')) {
+                    if (npc.associatedWith.includes(post.authorId)) {
+                        isVisible = true;
+                    }
+                }
+                // 判断2: 帖子作者是另一个NPC
+                else if (post.authorId.startsWith('npc_')) {
+                    const authorNpcId = parseInt(post.authorId.replace('npc_', ''));
+                    const authorNpc = await db.npcs.get(authorNpcId);
+                    if (authorNpc && authorNpc.associatedWith) {
+                        // 核心逻辑：计算关联列表的交集
+                        const intersection = npc.associatedWith.filter(id => authorNpc.associatedWith.includes(id));
+                        if (intersection.length > 0) {
+                            isVisible = true;
+                        }
+                    }
+                }
+                
+                if (isVisible || isRepliedTo) {
+                    tasks.push(post);
+                }
+            }
+// ▲▲▲ 替换结束 ▲▲▲
             
             // 即使没有可评论的帖子，NPC也应该有机会自己发帖
             if (tasks.length > 0 || Math.random() < 0.2) { // 增加20%的几率在没有可互动项时也主动发帖
@@ -21960,8 +22191,21 @@ async function generateNpcActions(npc, tasks) {
             }
         });
     }
-    const tasksString = tasks.map(post => {
-        const authorDisplayName = getDisplayNameByOriginalName(post.authorOriginalName || post.authorId);
+// ▼▼▼ 在 generateNpcActions 函数中，找到 const tasksString = ... 并用下面这整块替换 ▼▼▼
+    const tasksString = (await Promise.all(tasks.map(async post => {
+        let authorDisplayName = '未知作者';
+        if (post.authorId === 'user') {
+            authorDisplayName = state.qzoneSettings.nickname || '用户';
+        } else if (post.authorId.startsWith('chat_')) {
+            authorDisplayName = getDisplayNameByOriginalName(post.authorOriginalName || post.authorId);
+        } else if (post.authorId.startsWith('npc_')) {
+            const authorNpcId = parseInt(post.authorId.replace('npc_', ''));
+            const authorNpc = await db.npcs.get(authorNpcId);
+            if (authorNpc) {
+                authorDisplayName = authorNpc.name;
+            }
+        }
+
         const commentsString = (post.comments || [])
             .map(c => {
                  if (typeof c === 'object' && c.commenterName) {
@@ -21979,7 +22223,8 @@ async function generateNpcActions(npc, tasks) {
 ${commentsString || '(暂无评论)'}
 ---
 `;
-    }).join('\n');
+    }))).join('\n');
+// ▲▲▲ 替换结束 ▲▲▲
 
     // --- ▼▼▼ 【【【核心修改就在这里！】】】 ▼▼▼
 
@@ -22232,7 +22477,13 @@ if (chat.settings.enableTimePerception) {
             }).filter(Boolean).join('');
             
             if (linkedContents) {
-                worldBookContent = `\n\n# 核心世界观设定 (必须严格遵守以下所有设定)\n${linkedContents}\n`;
+                worldBookContent = `# --- 世界书 (World Book) ---
+# 【最高优先级规则：世界观设定】
+# 你【必须】将以下所有“世界书”中的设定，视为绝对的、不可动摇的背景事实。
+# 你的所有回复和行为都【绝对不能】与这些设定产生任何冲突。
+${linkedContents}
+# --- 世界书设定结束 ---
+`;
             }
         }
         // ▲▲▲ 替换结束 ▲▲▲
@@ -22356,8 +22607,11 @@ if (chat.settings.enableTimePerception) {
             }
         
     // ▼▼▼ 核心修改：在这里构建长期记忆上下文 ▼▼▼
-    const longTermMemoryContext = `# 长期记忆 (最高优先级，这是你和用户之间已经确立的事实，必须严格遵守)
-${chat.longTermMemory && chat.longTermMemory.length > 0 ? chat.longTermMemory.map(mem => `- ${mem.content}`).join('\n') : '- (暂无)'}`;
+const longTermMemoryContext = `# 长期记忆 (最高优先级，这是你和用户之间已经确立的事实，必须严格遵守)
+${chat.longTermMemory && chat.longTermMemory.length > 0 
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n') 
+    : '- (暂无)'
+}`;
     // ▲▲▲ 修改结束 ▲▲▲  
 
 const summary3Hours = generateSummaryForTimeframe(chat, 3, 'hours');
@@ -22441,7 +22695,10 @@ ${longTimeNoSee ? `【重要提示】你们已经很久没聊天了！你【必�
         # 供你决策的参考信息：
         -   **你的角色设定**: ${chat.settings.aiPersona}
         ${worldBookContent}
-        ${longTermMemoryContext}
+        ${chat.longTermMemory && chat.longTermMemory.length > 0 
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n') 
+    : '无'
+}
         ${multiLayeredSummaryContext}   
         ${linkedMemoryContext}
         ${chat.settings.enableTimePerception ? `-   **当前时间**:${currentTime} (${timeOfDayGreeting})` : ''}
@@ -22848,7 +23105,13 @@ const recentHistory = chat.history.filter(m => !m.isHidden).slice(-maxMemory);
             }).filter(Boolean).join('');
             
             if (linkedContents) {
-                worldBookContent = `\n\n# 核心世界观设定 (群内所有角色都必须严格遵守)\n${linkedContents}\n`;
+                worldBookContent = `# --- 世界书 (World Book) ---
+# 【最高优先级规则：世界观设定】
+# 你【必须】将以下所有“世界书”中的设定，视为绝对的、不可动摇的背景事实。
+# 你的所有回复和行为都【绝对不能】与这些设定产生任何冲突。
+${linkedContents}
+# --- 世界书设定结束 ---
+`;
             }
         }
         // ▲▲▲ 替换结束 ▲▲▲
@@ -25035,7 +25298,13 @@ async function endVideoCall() {
                     return worldBook && worldBook.content ? `\n\n## 世界书: ${worldBook.name}\n${worldBook.content}` : '';
                 }).filter(Boolean).join('');
                 if (linkedContents) {
-                    worldBookContent = `\n\n# 核心世界观设定 (你必须严格遵守)\n${linkedContents}\n`;
+                    worldBookContent = `# --- 世界书 (World Book) ---
+# 【最高优先级规则：世界观设定】
+# 你【必须】将以下所有“世界书”中的设定，视为绝对的、不可动摇的背景事实。
+# 你的所有回复和行为都【绝对不能】与这些设定产生任何冲突。
+${linkedContents}
+# --- 世界书设定结束 ---
+`;
                 }
             }
         
@@ -25300,7 +25569,8 @@ async function endVideoCall() {
         // ▼▼▼ 【全新】视频通话消息编辑与删除功能核心代码 ▼▼▼
         
         let activeCallMessageTimestamp = null; // 用于暂存正在操作的通话消息的时间戳
-        
+let isFrameManagementMode = false;
+let selectedFrames = new Set();        
         /**
          * 显示视频通话消息的操作菜单
          * @param {number} timestamp - 被长按的通话消息的时间戳
@@ -28872,7 +29142,7 @@ function createAiResponseEditorBlock(initialContent = '') {
         };
 
         // 3. 将这条“记忆碎片”也存入聊天记录
-        chat.history.push(hiddenThoughtMessage);
+        //chat.history.push(hiddenThoughtMessage);
         // --- 【【【修改结束】】】 ---
     }
     continue;
@@ -29379,7 +29649,94 @@ async function recallMessage(timestamp, isUserRecall) {
         }
         
         // ▲▲▲ 粘贴结束 ▲▲▲
+// ▼▼▼ 【全新】头像框批量删除功能核心函数 ▼▼▼
+
+/**
+ * 切换头像框面板的管理模式
+ */
+function toggleFrameManagementMode() {
+    isFrameManagementMode = !isFrameManagementMode;
+    const manageBtn = document.getElementById('manage-frames-btn');
+    const actionBar = document.getElementById('frame-action-bar');
+    const selectAllCheckbox = document.getElementById('select-all-frames-checkbox');
+
+    // 为两个网格同时添加/移除管理模式的class
+    document.querySelectorAll('.frame-grid').forEach(grid => {
+        grid.classList.toggle('management-mode', isFrameManagementMode);
+    });
+    
+    if (isFrameManagementMode) {
+        manageBtn.textContent = '完成';
+        actionBar.style.display = 'flex';
+        selectedFrames.clear();
+        selectAllCheckbox.checked = false;
+        updateDeleteFrameButton();
+    } else {
+        manageBtn.textContent = '管理';
+        actionBar.style.display = 'none';
+        // 退出时取消所有选中状态
+        document.querySelectorAll('.frame-item.selected').forEach(item => {
+            item.classList.remove('selected');
+        });
+    }
+}
+
+/**
+ * 更新“删除”按钮上的计数
+ */
+function updateDeleteFrameButton() {
+    const btn = document.getElementById('delete-selected-frames-btn');
+    btn.textContent = `删除 (${selectedFrames.size})`;
+}
+
+/**
+ * 处理“全选”复选框的点击事件
+ */
+function handleSelectAllFrames() {
+    const isChecked = document.getElementById('select-all-frames-checkbox').checked;
+    const visibleGrid = document.querySelector('.frame-content[style*="display: block"] .frame-grid');
+    if (!visibleGrid) return;
+
+    // 只选择当前可见的、且是自定义的（带有删除按钮）头像框
+    visibleGrid.querySelectorAll('.frame-item:has(.delete-btn)').forEach(item => {
+        const frameId = parseInt(item.querySelector('.delete-btn').dataset.id);
+        if (isNaN(frameId)) return;
         
+        item.classList.toggle('selected', isChecked);
+        if (isChecked) {
+            selectedFrames.add(frameId);
+        } else {
+            selectedFrames.delete(frameId);
+        }
+    });
+    updateDeleteFrameButton();
+}
+
+/**
+ * 执行批量删除操作
+ */
+async function executeBatchDeleteFrames() {
+    if (selectedFrames.size === 0) return;
+    
+    const confirmed = await showCustomConfirm(
+        '确认删除',
+        `确定要永久删除选中的 ${selectedFrames.size} 个自定义头像框吗？`,
+        { confirmButtonClass: 'btn-danger' }
+    );
+
+    if (confirmed) {
+        const idsToDelete = [...selectedFrames];
+        await db.customAvatarFrames.bulkDelete(idsToDelete);
+        
+        // 退出管理模式并刷新
+        toggleFrameManagementMode();
+        populateFrameGrids(editingFrameForMember); 
+        
+        await showCustomAlert('删除成功', '选中的头像框已成功删除。');
+    }
+}
+
+// ▲▲▲ 新增函数粘贴结束 ▲▲▲        
         // ▼▼▼ 在这里粘贴新函数 ▼▼▼
         /**
          * 将用户自定义的全局CSS应用到页面
@@ -31744,7 +32101,13 @@ async function handlePropelAction() {
                 return formattedEntries ? `\n\n## 世界书: ${worldBook.name}\n${formattedEntries}` : '';
             }).filter(Boolean).join('');
             if (linkedContents) {
-                worldBookContent = `\n\n# 核心世界观设定 (必须严格遵守以下所有设定)\n${linkedContents}\n`;
+                worldBookContent = `# --- 世界书 (World Book) ---
+# 【最高优先级规则：世界观设定】
+# 你【必须】将以下所有“世界书”中的设定，视为绝对的、不可动摇的背景事实。
+# 你的所有回复和行为都【绝对不能】与这些设定产生任何冲突。
+${linkedContents}
+# --- 世界书设定结束 ---
+`;
             }
         }
         let musicContext = '';
@@ -33614,7 +33977,7 @@ async function sendCharLocationShare(locationName) {
 
 
 /**
- * 【V2.1 | 全屏查看最终版】点击备忘录列表项时，打开详情页面查看其内容
+ * 【V2.1 | 已添加收藏功能】点击备忘录列表项时，打开详情页面查看其内容
  * @param {number} memoId - 要查看的备忘录的ID
  */
 async function viewMemo(memoId) {
@@ -33623,15 +33986,20 @@ async function viewMemo(memoId) {
 
     const memo = char.memos.find(m => m.id === memoId);
     if (memo) {
-        // 1. 【核心修复】现在我们直接通过ID查找标题和内容元素
+        // 1. 【核心新增】将当前备忘录对象存入全局变量
+        activeMemoForViewing = memo; 
+
         const titleEl = document.getElementById('char-memo-detail-title');
         const contentEl = document.getElementById('char-memo-detail-content');
+        const favBtn = document.getElementById('favorite-memo-btn');
 
-        // 2. 将备忘录的数据填充进去
         if (titleEl) titleEl.textContent = memo.title;
         if (contentEl) contentEl.value = memo.content;
+        
+        // 2. 【核心新增】检查这篇备忘录是否已被收藏，并更新按钮状态
+        const existingFavorite = await db.favorites.where({ type: 'char_memo', 'content.id': memoId }).first();
+        favBtn.classList.toggle('active', !!existingFavorite);
 
-        // 3. 切换到新的详情页屏幕
         switchToCharScreen('char-memo-detail-screen');
     }
 }
@@ -33740,7 +34108,9 @@ async function handleGenerateSimulatedDiaries() {
 
     const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
 
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -33885,7 +34255,9 @@ ${recentHistoryWithUser}
 
             const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
 
-            const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+            const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
             const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
             const worldBookContext = (chat.settings.linkedWorldBookIds || []).map(bookId=>state.worldBooks.find(wb=>wb.id===bookId)).filter(Boolean).map(book=>`\n## 世界书《${book.name}》设定:\n${book.content.filter(e=>e.enabled).map(e=>`- ${e.content}`).join('\n')}`).join('');
@@ -34079,6 +34451,47 @@ ${recentHistoryWithUser}
         }
     }
     // ▲▲▲ 新增函数结束 ▲▲▲
+// ▼▼▼ 【全新】这是收藏/取消收藏备忘录的核心功能 ▼▼▼
+/**
+ * 切换当前备忘录的收藏状态
+ */
+async function toggleMemoFavorite() {
+    // 1. 从全局变量中获取当前正在查看的备忘录
+    if (!activeMemoForViewing || !activeCharacterId) return;
+
+    const memo = activeMemoForViewing;
+    const char = state.chats[activeCharacterId];
+    const favBtn = document.getElementById('favorite-memo-btn');
+
+    // 2. 检查数据库，看这条备忘录是否已经被收藏过了
+    const existingFavorite = await db.favorites.where({ type: 'char_memo', 'content.id': memo.id }).first();
+
+    if (existingFavorite) {
+        // 3. 如果已经收藏了，就执行“取消收藏”
+        await db.favorites.delete(existingFavorite.id);
+        favBtn.classList.remove('active'); // 移除按钮的高亮状态
+        await showCustomAlert('操作成功', '已取消收藏。');
+    } else {
+        // 4. 如果还没收藏，就执行“添加收藏”
+        const newFavorite = {
+            type: 'char_memo',
+            // 将备忘录的完整内容，连同作者信息一起打包存入
+            content: {
+                id: memo.id,
+                title: memo.title,
+                content: memo.content,
+                timestamp: memo.timestamp,
+                characterId: activeCharacterId,
+                characterName: char.name
+            },
+            timestamp: Date.now() // 记录收藏操作的时间
+        };
+        await db.favorites.add(newFavorite);
+        favBtn.classList.add('active'); // 添加高亮状态
+        await showCustomAlert('操作成功', '已成功收藏到“我的收藏”页面！');
+    }
+}
+// ▲▲▲ 新增函数结束 ▲▲▲
         /**
          * 【全新】删除一篇日记
          * @param {number} diaryId - 要删除的日记的ID
@@ -34234,7 +34647,9 @@ async function handleGenerateSimulatedQQ() {
 
     const userDisplayNameForAI = state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname ? '用户' : state.qzoneSettings.nickname;
     const userNicknameInThisChat = chat.settings.myNickname || userDisplayNameForAI;
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
 const maxMemory = chat.settings.maxMemory || 10;
     const recentHistoryWithUser =chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userNicknameInThisChat : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -34760,7 +35175,9 @@ async function handleGenerateSimulatedAlbum() {
 
     const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
     
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -34950,7 +35367,9 @@ async function handleGenerateBrowserHistory() {
     
     const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
 
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -35151,7 +35570,9 @@ async function handleGenerateTaobaoHistory() {
 
     const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
 
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -35351,7 +35772,9 @@ async function handleGenerateSimulatedMemos() {
 
     const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
 
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -35491,7 +35914,9 @@ async function handleGenerateAmapHistory() {
     }
     
     const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -35679,7 +36104,9 @@ async function handleGenerateAppUsage() {
     
     const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
 
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -35844,7 +36271,9 @@ async function handleGenerateSimulatedMusic() {
     
     const userDisplayNameForAI = (state.qzoneSettings.nickname === '{{user}}' || !state.qzoneSettings.nickname) ? '用户' : state.qzoneSettings.nickname;
 
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const maxMemory = chat.settings.maxMemory || 10;
 const recentHistoryWithUser = chat.history.slice(-maxMemory).map(msg => `${msg.role === 'user' ? userDisplayNameForAI : chat.name}: ${String(msg.content).substring(0, 30)}...`).join('\n');
     const worldBookContext = (chat.settings.linkedWorldBookIds || [])
@@ -37174,7 +37603,7 @@ async function populateFrameGrids(isForMember = false, memberAvatar = null, memb
         });
     }
 }
-
+// ▼▼▼ 【请用这个V2.1版本】替换旧的 createFrameItem 函数 ▼▼▼
 /**
  * 【升级版】创建单个头像框的预览DOM，为自定义框添加删除按钮
  * @param {object} frame - 头像框对象 { id, url, name }
@@ -37188,7 +37617,6 @@ function createFrameItem(frame, type, previewAvatarSrc) {
     item.dataset.frameUrl = frame.url;
     item.title = frame.name;
 
-    // 【核心修改】检查
     const isCustom = typeof frame.id === 'number';
     const deleteButtonHtml = isCustom ? `<button class="delete-btn" data-id="${frame.id}" style="display:block;">×</button>` : '';
 
@@ -37197,18 +37625,39 @@ function createFrameItem(frame, type, previewAvatarSrc) {
         <img src="${previewAvatarSrc}" class="preview-avatar">
         ${frame.url ? `<img src="${frame.url}" class="preview-frame">` : ''}
     `;
+
+    // 【【【核心修改就在这里！】】】
     item.addEventListener('click', (e) => {
-        // 如果点击的是删除按钮，则不执行选择操作
+        // 如果点击的是删除按钮，则不执行任何选择操作，让事件冒泡上去
         if (e.target.classList.contains('delete-btn')) {
             return;
         }
-        currentFrameSelection[type] = frame.url;
-        const grid = type === 'ai' ? document.getElementById('ai-frame-grid') : document.getElementById('my-frame-grid');
-        grid.querySelectorAll('.frame-item').forEach(el => el.classList.remove('selected'));
-        item.classList.add('selected');
+
+        // 如果当前处于管理模式
+        if (isFrameManagementMode) {
+            // 只有自定义的头像框才能被选中
+            if (isCustom) {
+                const frameId = parseInt(frame.id);
+                item.classList.toggle('selected');
+                if (selectedFrames.has(frameId)) {
+                    selectedFrames.delete(frameId);
+                } else {
+                    selectedFrames.add(frameId);
+                }
+                updateDeleteFrameButton();
+            }
+        } else {
+            // 否则，执行原来的选择逻辑
+            currentFrameSelection[type] = frame.url;
+            const grid = type === 'ai' ? document.getElementById('ai-frame-grid') : document.getElementById('my-frame-grid');
+            grid.querySelectorAll('.frame-item').forEach(el => el.classList.remove('selected'));
+            item.classList.add('selected');
+        }
     });
+    
     return item;
 }
+// ▲▲▲ 替换结束 ▲▲▲
 
 /**
  * 【全新】处理本地上传单个头像框的逻辑
@@ -41621,7 +42070,9 @@ async function handleGenerateShoppingItems() {
     
     // 2. 【核心新增】构建完整的角色上下文，注入到Prompt中
     const userNickname = state.qzoneSettings.nickname || '我';
-    const longTermMemoryContext = chat.longTermMemory?.map(mem => `- ${mem.content}`).join('\n') || '无';
+    const longTermMemoryContext = chat.longTermMemory && chat.longTermMemory.length > 0
+    ? chat.longTermMemory.map(mem => `- (记录于 ${formatTimeAgo(mem.timestamp)}) ${mem.content}`).join('\n')
+    : '无';
     const recentHistoryContext = chat.history.slice(-10).map(msg => 
         `${msg.role === 'user' ? userNickname : chat.name}: ${String(msg.content).substring(0, 30)}...`
     ).join('\n');
@@ -41813,6 +42264,108 @@ async function handleWidgetImageChange(imageId) {
 window.handleWidgetImageChange = handleWidgetImageChange;
 
 /* ▲▲▲ 新增JS代码结束 ▲▲▲ */
+/**
+ * 使用流式传输，将所有数据导出到一个大文件中
+ */
+async function exportDataAsStream() {
+    // 检查库是否已加载
+    if (!window.streamSaver) {
+        alert("流式下载库 (StreamSaver.js) 未加载。请检查网络连接或HTML文件配置。");
+        return;
+    }
+    
+    await showCustomAlert("正在准备...", "即将开始下载您的完整备份文件。下载过程中请勿关闭页面。");
+    
+    // 创建一个写入流，并命名文件
+    const fileStream = streamSaver.createWriteStream(`EPhone-Full-Backup-Streamed-${new Date().toISOString().split('T')[0]}.json`);
+    const writer = fileStream.getWriter();
+    const encoder = new TextEncoder(); // 用于将字符串转换为二进制数据
+
+    try {
+        // 手动写入JSON文件的开头结构
+        await writer.write(encoder.encode('{\n"version": 3,\n"timestamp": ' + Date.now() + ',\n"data": {\n'));
+
+        const tablesToBackup = await db.tables.map(t => t.name);
+        
+        for (let i = 0; i < tablesToBackup.length; i++) {
+            const tableName = tablesToBackup[i];
+            const table = db.table(tableName);
+
+            // 写入表名作为key
+            await writer.write(encoder.encode(`"${tableName}": [\n`));
+            
+            let isFirstRecordInTable = true;
+            // 使用Dexie的each方法，逐条读取记录，内存占用极低
+            await table.each(record => {
+                if (!isFirstRecordInTable) {
+                    writer.write(encoder.encode(',\n'));
+                }
+                // 将单条记录转换为JSON字符串并写入流
+                writer.write(encoder.encode(JSON.stringify(record)));
+                isFirstRecordInTable = false;
+            });
+
+            // 写入表的结尾
+            await writer.write(encoder.encode('\n]'));
+            if (i < tablesToBackup.length - 1) {
+                // 如果不是最后一张表，就加一个逗号
+                await writer.write(encoder.encode(',\n'));
+            }
+        }
+
+        // 手动写入JSON文件的结尾结构
+        await writer.write(encoder.encode('\n}\n}'));
+        
+    } catch (error) {
+        console.error("流式导出过程中出错:", error);
+        await showCustomAlert('导出失败', `在写入文件流时发生错误: ${error.message}`);
+    } finally {
+        // 无论成功与否，都必须关闭写入流
+        await writer.close();
+    }
+}
+/**
+ * 【全新】使用传统Blob方式，将所有数据导出到一个文件中（作为备用方案）
+ */
+async function exportDataAsBlob() {
+    await showCustomAlert("正在准备...", "正在读取所有数据到内存中，请稍候...");
+
+    try {
+        const backupData = {
+            version: 3, // 标记为新版结构
+            timestamp: Date.now(),
+            data: {} // 所有数据都将存放在这个 'data' 对象中
+        };
+
+        const tablesToBackup = db.tables.map(t => t.name);
+
+        for (const tableName of tablesToBackup) {
+            const tableData = await db.table(tableName).toArray();
+            backupData.data[tableName] = tableData;
+            console.log(`已打包表: ${tableName}, 记录数: ${tableData.length}`);
+        }
+        
+        const blob = new Blob(
+            [JSON.stringify(backupData, null, 2)], 
+            { type: 'application/json' }
+        );
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `EPhone-Full-Backup-Legacy-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        await showCustomAlert('导出成功', '已成功导出所有数据！');
+
+    } catch (error) {
+        console.error("传统导出数据时出错:", error);
+        await showCustomAlert('导出失败', `发生了一个错误: ${error.message}`);
+    }
+}
+
+
 
 
               // ===================================================================
@@ -42159,7 +42712,21 @@ window.openNpcEditor = openNpcEditor; // <-- 新增这一行
         // ▲▲▲ 粘贴结束 ▲▲▲
                     document.getElementById('custom-modal-cancel').addEventListener('click', hideCustomModal);
                     document.getElementById('custom-modal-overlay').addEventListener('click', (e) => { if (e.target === modalOverlay) hideCustomModal(); });
-                    document.getElementById('export-data-btn').addEventListener('click', exportBackup);
+                    document.getElementById('export-data-btn').addEventListener('click', async () => {
+    // 弹出选择框，让用户决定使用哪种导出方式
+    const choice = await showChoiceModal('选择导出方式', [
+        { text: '智能导出 (推荐，速度快，内存占用小)', value: 'stream' },
+        { text: '传统导出 (兼容旧版或内存小的浏览器)', value: 'blob' }
+    ]);
+
+    // 根据用户的选择，调用不同的导出函数
+    if (choice === 'stream') {
+        exportDataAsStream();
+    } else if (choice === 'blob') {
+        exportDataAsBlob();
+    }
+    // 如果用户点击取消，则 choice 为 null，不做任何事
+});
 // ▼▼▼ 在这里粘贴下面的新代码 ▼▼▼
 document.getElementById('cleanup-data-btn').addEventListener('click', cleanupRedundantData);
 // ▲▲▲ 粘贴结束 ▲▲▲
@@ -42171,7 +42738,8 @@ document.getElementById('offline-mode-toggle').addEventListener('change', (e) =>
     document.getElementById('time-perception-toggle').addEventListener('change', (e) => {
         document.getElementById('time-zone-group').style.display = e.target.checked ? 'block' : 'none';
     });
-                    document.getElementById('import-data-input').addEventListener('change', e => importBackup(e.target.files[0]));
+                    // 新代码
+document.getElementById('import-data-input').addEventListener('change', e => handleSmartImport(e.target.files[0]));
                     document.getElementById('import-card-input').addEventListener('change', handleCardImport);
                     document.getElementById('back-to-list-btn').addEventListener('click', () => { 
                ruleCache = {};
@@ -46190,6 +46758,7 @@ document.getElementById('import-single-chat-input').addEventListener('change', (
 document.getElementById('add-char-memo-btn').addEventListener('click', () => openMemoEditor());
 document.getElementById('add-char-diary-btn').addEventListener('click', () => openDiaryEditor());
 document.getElementById('favorite-diary-btn').addEventListener('click', toggleDiaryFavorite);
+document.getElementById('favorite-memo-btn').addEventListener('click', toggleMemoFavorite); 
 // ▲▲▲ 新增事件绑定结束 ▲▲▲
         // “重新生成”按钮
 // 新代码 (解决方案)
@@ -46930,7 +47499,9 @@ document.getElementById('appearance-preset-select').addEventListener('change', h
 document.getElementById('save-appearance-preset-btn').addEventListener('click', saveAppearancePreset);
 document.getElementById('delete-appearance-preset-btn').addEventListener('click', deleteAppearancePreset);
 // ▲▲▲ 新增结束 ▲▲▲
-
+document.getElementById('manage-frames-btn').addEventListener('click', toggleFrameManagementMode);
+document.getElementById('select-all-frames-checkbox').addEventListener('change', handleSelectAllFrames);
+document.getElementById('delete-selected-frames-btn').addEventListener('click', executeBatchDeleteFrames);
 
 
     checkForUpdates();
@@ -46946,38 +47517,46 @@ document.getElementById('delete-appearance-preset-btn').addEventListener('click'
         <div id="qzone-sticker-grid"></div>
     </div>
     <!-- ▼▼▼ 【全新 V2.0 | 支持上传】请用这整块代码，完整替换旧的 avatar-frame-modal ▼▼▼ -->
-    <div id="avatar-frame-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>选择头像框</span>
-                <!-- 【核心新增】添加操作按钮 -->
-                <div class="header-actions">
-                    <button id="upload-custom-frame-btn" class="action-button">上传</button>
-                    <button id="batch-import-frames-btn" class="action-button">批量</button>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="frame-tabs">
-                    <div id="ai-frame-tab" class="frame-tab active">对方的</div>
-                    <div id="my-frame-tab" class="frame-tab">我的</div>
-                </div>
-                <div id="ai-frame-content" class="frame-content">
-                    <div id="ai-frame-grid" class="frame-grid">
-                    </div>
-                </div>
-                <div id="my-frame-content" class="frame-content" style="display: none;">
-                    <div id="my-frame-grid" class="frame-grid">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="cancel" id="cancel-frame-settings-btn">取消</button>
-                <button class="save" id="save-frame-settings-btn">保存</button>
+<div id="avatar-frame-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>选择头像框</span>
+            <div class="header-actions">
+                <!-- 【核心新增1】这就是新的“管理”按钮 -->
+                <button id="manage-frames-btn" class="action-button">管理</button>
+                <button id="upload-custom-frame-btn" class="action-button">上传</button>
+                <button id="batch-import-frames-btn" class="action-button">批量</button>
             </div>
         </div>
+        <div class="modal-body">
+            <div class="frame-tabs">
+                <div id="ai-frame-tab" class="frame-tab active">对方的</div>
+                <div id="my-frame-tab" class="frame-tab">我的</div>
+            </div>
+            <div id="ai-frame-content" class="frame-content">
+                <div id="ai-frame-grid" class="frame-grid">
+                </div>
+            </div>
+            <div id="my-frame-content" class="frame-content" style="display: none;">
+                <div id="my-frame-grid" class="frame-grid">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="cancel" id="cancel-frame-settings-btn">取消</button>
+            <button class="save" id="save-frame-settings-btn">保存</button>
+        </div>
+        <!-- 【核心新增2】这是底部批量操作栏 -->
+        <div id="frame-action-bar" style="display: none;">
+            <label class="select-all-label" style="display: flex; align-items: center; gap: 5px;">
+                <input type="checkbox" id="select-all-frames-checkbox"> 全选
+            </label>
+            <button id="delete-selected-frames-btn" class="action-bar-btn">删除 (0)</button>
+        </div>
     </div>
-    <!-- 【核心新增】用于本地上传的隐藏文件输入框 -->
-    <input type="file" id="custom-frame-upload-input" accept="image/*" hidden>
+</div>
+<!-- 【核心新增】用于本地上传的隐藏文件输入框 -->
+<input type="file" id="custom-frame-upload-input" accept="image/*" hidden>
     <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
 <div id="character-profile-modal" class="modal">
