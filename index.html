@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>EPhone（星月版）</title>
+  <title>EPhone</title>
   <link rel="stylesheet" href="style.css">
   <link rel="apple-touch-icon" href="https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1758510900942_qdqqd_djw0z2.jpeg">
   <link rel="manifest" href="manifest.json">
@@ -44,9 +44,9 @@
               <div id="profile-widget"> <img id="profile-banner-img" src="https://i.imgur.com/1n3a43H.jpeg" class="editable-image">
                 <div class="profile-avatar-container"> <img id="profile-avatar-img" src="https://i.postimg.cc/y8xWzCqj/anime-boy.jpg" class="editable-image"> </div>
                 <div class="profile-info">
-                  <p id="profile-username" class="editable-text">@ insonneve 🪦</p>
-                  <p id="profile-sub-username" class="editable-text">@ insonneve</p>
-                  <p id="profile-bio" class="editable-text">你好像过得很好 迫不及待的抹去我存在的痕迹</p>
+                  <p id="profile-username" class="editable-text">星月传奇</p>
+                  <p id="profile-sub-username" class="editable-text">@ 77loveEthan</p>
+                  <p id="profile-bio" class="editable-text">把月亮借我一晚好不好？我要在你睫毛上挂一串星</p>
                   <p id="profile-location" class="editable-text"> <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5-1.12 2.5-2.5 2.5z"></path>
                     </svg> <span>星月舱</span> </p>
@@ -62,7 +62,7 @@
                 </div>
                 <div id="desktop-app-container">
                   <div class="desktop-app-icon" onclick="showScreen('chat-list-screen')">
-                    <div class="icon-bg-desktop"><img id="icon-img-qq" src="https://i.postimg.cc/MTC3Tkw8/IMG-6436.jpg" alt="QQ"></div> <span class="label">QQ</span>
+                    <div class="icon-bg-desktop"><img id="icon-img-qq" src="https://i.postimg.cc/MTC3Tkw8/IMG-6436.jpg" alt="聊天"></div> <span class="label">QQ</span>
                   </div>
                   <div class="desktop-app-icon" onclick="showScreen('world-book-screen')">
                     <div class="icon-bg-desktop"><img id="icon-img-world-book" src="https://i.postimg.cc/HWf1JKzn/IMG-6435.jpg" alt="世界书"></div> <span class="label">世界书</span>
@@ -1220,6 +1220,15 @@
         <div class="form-group"> <label for="linked-memory-count">挂载记忆条数</label> <input type="number" id="linked-memory-count" value="10">
           <p style="font-size: 12px; color: #8a8a8a; margin-top: 8px; line-height: 1.5;"> • 每次调用时，从每个“挂载的聊天”中提取最后几条记录作为参考记忆。 <br> • 建议值 5-20。值越大记忆越全，但API费用越高、响应越慢。 </p>
         </div>
+        <div class="form-group">
+            <label for="token-count-display">
+                预估总上下文Token数 (仅供参考)
+                <span title="这是一个基于字符数和复杂规则的估算值，与模型实际计算结果可能存在差异。" style="cursor: help; color: #999;"></span>
+            </label>
+<p id="token-count-display">
+            正在计算...
+        </p>
+        </div>
         <hr style="opacity: 0.3; margin: 20px 0;">
         <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;"> <label for="auto-memory-toggle" style="margin-bottom: 0;"> 启用自动总结长期记忆 <p style="font-size: 12px; font-weight: normal; color: #999; margin-top: 5px;"> 开启后，AI会在对话达到一定长度时，自动将内容提炼为长期记忆。 </p>
           </label> <label class="toggle-switch"> <input type="checkbox" id="auto-memory-toggle"> <span class="slider"></span> </label> </div>
@@ -2364,6 +2373,8 @@
 
 </body>
 </html>
+
+
 
 
 
