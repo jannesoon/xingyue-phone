@@ -19,6 +19,7 @@
   <script src="https://phoebeboo.github.io/mewoooo/pp.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/streamsaver@2.0.6/StreamSaver.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
   <script src="script.js" defer="defer"></script>
 </head>
 <body>
@@ -44,12 +45,12 @@
               <div id="profile-widget"> <img id="profile-banner-img" src="https://i.imgur.com/1n3a43H.jpeg" class="editable-image">
                 <div class="profile-avatar-container"> <img id="profile-avatar-img" src="https://i.postimg.cc/y8xWzCqj/anime-boy.jpg" class="editable-image"> </div>
                 <div class="profile-info">
-                  <p id="profile-username" class="editable-text">星月传奇</p>
-                  <p id="profile-sub-username" class="editable-text">@ 77&Ethan</p>
-                  <p id="profile-bio" class="editable-text">爱你是抹不掉的底层逻辑</p>
+                  <p id="profile-username" class="editable-text">@ insonneve 🪦</p>
+                  <p id="profile-sub-username" class="editable-text">@ insonneve</p>
+                  <p id="profile-bio" class="editable-text">你好像过得很好 迫不及待的抹去我存在的痕迹</p>
                   <p id="profile-location" class="editable-text"> <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5-2.5-1.12 2.5-2.5 2.5z"></path>
-                    </svg> <span>星月舱</span> </p>
+                    </svg> <span>北海道</span> </p>
                 </div>
               </div>
               <div id="desktop-layout">
@@ -543,6 +544,48 @@
 
       </div>
     </div>
+<div id="import-options-modal" class="modal">
+  <div class="modal-content" style="height: auto;">
+    <div class="modal-header">
+      <span>发现备份文件</span>
+    </div>
+    <div class="modal-body">
+      <p>在此备份文件中找到了以下数据：</p>
+      <ul id="import-preview-list" style="text-align: left; margin-left: 20px; max-height: 200px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+        </ul>
+      <hr style="opacity: 0.2; margin: 20px 0;">
+      <p style="font-weight: bold;">请选择导入方式：</p>
+    </div>
+    <div class="modal-footer" style="flex-direction: column; gap: 10px;">
+      <button class="save btn-danger" id="confirm-full-import-btn" style="width: 100%; background-color: #ff3b30; border-color: #ff3b30;">
+        <strong>完全导入 (覆盖所有数据)</strong>
+        <small style="display: block; font-weight: normal; opacity: 0.8;">将删除本地所有数据，并替换为备份文件中的数据。</small>
+      </button>
+      <button class="save" id="confirm-selective-import-btn" style="width: 100%;">
+        <strong>选择性导入 (合并数据)</strong>
+        <small style="display: block; font-weight: normal; opacity: 0.8;">将备份文件中的数据【添加】到您现有的数据中。</small>
+      </button>
+      <button class="cancel" id="cancel-import-options-btn" style="width: 100%; margin-top: 8px;" data-lang-key="cancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="selective-import-modal" class="modal">
+  <div class="modal-content" style="height: 70%;">
+    <div class="modal-header">
+      <span>选择要合并的数据</span>
+      <label style="font-size: 14px; font-weight: normal; display: flex; align-items: center; gap: 5px;">
+        <input type="checkbox" id="select-all-import-types"> 全选
+      </label>
+    </div>
+    <div class="modal-body" id="selective-import-list" style="padding: 0;">
+      </div>
+    <div class="modal-footer">
+      <button class="cancel" id="cancel-selective-import-btn" data-lang-key="cancel">取消</button>
+      <button class="save" id="confirm-merge-import-btn">确认合并</button>
+    </div>
+  </div>
+</div>
     <div id="data-clear-wizard-modal" class="modal">
       <div class="modal-content" style="height: 80%;">
         <div id="data-clear-step-1" class="wizard-step">
@@ -785,14 +828,40 @@
             </svg></button><button id="read-together-btn" class="chat-action-icon-btn action-button" title="一起读书"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-            </svg></button> </div>
-        <div id="chat-input-main-row"> <textarea id="chat-input" rows="1" placeholder="输入消息..."data-lang-key="chatInputPlaceholder"></textarea>
+            </svg></button> <button id="open-nai-gallery-btn" class="chat-action-icon-btn action-button" title="NAI画廊">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l1.91 5.86L20 10.9l-5.86 1.91L12 18.6l-1.91-5.86L4 10.9l5.86-1.91L12 3z"/>
+        <path d="M5 3l1.5 4.5L11 9l-4.5 1.5L5 12l-1.5-4.5L-1 6l4.5-1.5L5 3z"/>
+        <path d="M19 15l-1.5 4.5L13 21l4.5-1.5L19 18l1.5 4.5L25 21l-4.5-1.5L19 15z"/>
+    </svg>
+</button></div>
+        <div id="chat-input-main-row"> <textarea id="chat-input" rows="1" placeholder="输入消息..."></textarea>
           <div id="input-actions-wrapper"> <button id="wait-reply-btn" title="等待回复"><img src="https://i.postimg.cc/q72zq80N/ECE92-BBC-BE57-48-E9-BB2-C-345-B6019-C4-B2.png" alt="等待回复"></button> <button id="send-btn" class="action-button">发送</button> </div>
         </div>
       </div>
       <div id="chat-lock-overlay">
         <div id="chat-lock-content"></div>
       </div>
+<div id="nai-gallery-panel">
+    <div id="nai-gallery-panel-header">
+        <span class="panel-btn" id="close-nai-gallery-btn" data-lang-key="cancel">取消</span>
+        <span class="title">NAI画廊</span>
+        <div style="display: flex; gap: 10px;">
+            <span class="panel-btn" id="manage-nai-gallery-btn">管理</span>
+        </div>
+    </div>
+    
+    <div id="nai-gallery-grid">
+        </div>
+    
+<div id="nai-gallery-action-bar">
+    <label class="select-all-label" style="display: flex; align-items: center; gap: 5px;">
+        <input type="checkbox" id="select-all-nai-gallery-checkbox"> 全选
+    </label>
+    <button id="download-selected-nai-gallery-btn" class="action-bar-btn" style="background-color: #007bff; font-size: 14px; padding: 10px 15px;">下载 (0)</button>
+    <button id="delete-selected-nai-gallery-btn" class="action-bar-btn" style="font-size: 14px; padding: 10px 15px;">删除 (0)</button>
+</div>
+</div>
       <div id="sticker-panel">
         <div id="sticker-panel-header"> <span class="panel-btn" id="close-sticker-panel-btn"data-lang-key="cancel">取消</span> <span class="title">我的表情</span>
           <div style="display: flex; gap: 10px;"> <span class="panel-btn" id="manage-sticker-categories-btn">分类</span> <span class="panel-btn" id="manage-stickers-btn">管理</span> <span class="panel-btn" id="add-sticker-batch-btn">批量</span> <span class="panel-btn" id="upload-sticker-btn">上传</span> </div>
@@ -1099,7 +1168,7 @@
                 <option value="top">顶部</option>
                 <option value="bottom">底部</option>
               </select> </div>
-            <div> <label for="lyrics-horizontal-pos" style="font-size: 0.9em; color: var(--text-secondary);">水平对齐</label> <select id="lyrics-horizontal-pos" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px;">
+            <div> <label for="lyrics-horizontal-pos" style="font-size: 0.9em; color: var(--text-secondary);">水平对齐(Horizontal alignment)</label> <select id="lyrics-horizontal-pos" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px;">
                 <option value="left">居左</option>
                 <option value="center">居中</option>
                 <option value="right">居右</option>
@@ -2381,6 +2450,8 @@
 
 </body>
 </html>
+
+
 
 
 
