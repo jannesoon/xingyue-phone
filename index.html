@@ -95,12 +95,6 @@
                 <div class="small-widget" onclick="showScreen('tutorial-screen')">
                   <div class="small-widget-icon-wrapper"> <img class="small-widget-img" id="icon-img-tutorial" src="https://i.postimg.cc/d10GjC4g/IMG-7302.jpg" alt="教程"> </div> <span class="small-widget-label"data-lang-key="homeAppTutorial">教程</span>
                 </div>
-                <div class="small-widget" onclick="openWerewolfLobby('global')">
-                  <div class="small-widget-icon-wrapper"> <img class="small-widget-img" id="icon-img-werewolf" src="https://i.postimg.cc/k401K5g7/IMG-7304.jpg" alt="狼人杀"> </div> <span class="small-widget-label"data-lang-key="homeAppWerewolf">狼人杀</span>
-                </div>
-                <div class="small-widget" onclick="showScreen('x-social-screen')">
-                  <div class="small-widget-icon-wrapper"> <img class="small-widget-img" id="icon-img-x" src="https://i.postimg.cc/Y9d3BztC/1.png" alt="X"> </div> <span class="small-widget-label"data-lang-key="homeAppX">X</span>
-                </div>
               </div>
             </div>
           </div>
@@ -120,8 +114,8 @@
         <div class="desktop-app-icon" onclick="openCharacterSelector()">
           <div class="icon-bg-desktop"><img id="icon-img-char-phone" src="https://i.postimg.cc/pXj9h20L/IMG-7275.jpg" alt="Cphone"></div> <span class="label"data-lang-key="homeAppCPhone">Cphone</span>
         </div>
-        <div class="desktop-app-icon" onclick="showScreen('douban-screen')">
-          <div class="icon-bg-desktop"><img id="icon-img-douban" src="https://i.postimg.cc/Pq2xJN1g/IMG-7301.jpg" alt="豆瓣"></div> <span class="label"data-lang-key="homeAppDouban">豆瓣</span>
+        <div class="desktop-app-icon" onclick="openWerewolfLobby('global')">
+          <div class="icon-bg-desktop"><img id="icon-img-werewolf" src="https://i.postimg.cc/k401K5g7/IMG-7304.jpg" alt="狼人杀"></div> <span class="label"data-lang-key="homeAppWerewolf">狼人杀</span>
         </div>
       </div>
     </div>
@@ -1052,51 +1046,6 @@
     <div id="call-history-screen" class="screen">
       <div class="header"> <span class="back-btn" id="call-history-back-btn">‹</span> <span id="call-history-title">通话记录</span> <span style="width: 30px;"></span> </div>
       <div id="call-history-list" class="list-container" style="padding: 15px; display: flex; flex-direction: column; gap: 15px;"> </div>
-    </div>
-    <div id="douban-screen" class="screen">
-      <div class="header"> <span class="back-btn" onclick="showScreen('home-screen')">‹</span> <span>豆瓣小组</span>
-        <div class="header-actions"> <span class="action-btn" id="douban-settings-btn" title="豆瓣设置"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path
-                d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.44,0.17-0.48,0.41L9.12,4.84c-0.59,0.24-1.12,0.56-1.62,0.94L5.11,4.82c-0.22-0.08-0.47,0-0.59,0.22l-1.92,3.32 c-0.12,0.22-0.07,0.47,0.12,0.61l2.03,1.58C4.84,11.36,4.82,11.68,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.48,2.03 c0.04,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.48-0.41l0.48-2.03c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z">
-              </path>
-            </svg> </span> <span class="action-btn" id="douban-cast-select-btn" title="选择参与角色"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg> </span> <span class="action-btn" id="regenerate-douban-btn" title="重新生成内容"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4"></path>
-              <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
-            </svg> </span> </div>
-      </div>
-      <div id="douban-posts-list" class="list-container"> </div>
-    </div>
-    <div id="douban-post-detail-screen" class="screen">
-      <div class="header"> <span class="back-btn" id="douban-detail-back-btn">‹</span> <span id="douban-post-detail-title">帖子详情</span> <span style="width: 30px;"></span> </div>
-      <div id="douban-detail-content-wrapper" class="list-container">
-        <div id="douban-post-detail-body">
-          <div class="douban-post-header"> <img id="douban-detail-avatar" class="douban-post-avatar">
-            <div class="douban-author-info">
-              <div id="douban-detail-author" class="douban-author-name"></div>
-              <div id="douban-detail-group" class="douban-group-name"></div>
-            </div>
-          </div>
-          <h2 id="douban-detail-post-title" class="douban-post-title"></h2>
-          <div id="douban-detail-content" class="douban-detail-content"></div>
-        </div>
-        <div class="douban-comments-section">
-          <h4>回应</h4>
-          <div id="douban-detail-comments-list"></div>
-        </div>
-      </div>
-      <div id="douban-comment-footer" class="post-footer">
-        <div class="comment-section"> <img id="douban-my-comment-avatar" src="" class="comment-avatar"> <input type="text" id="douban-comment-input" class="comment-input" placeholder="写回应..."> </div> <button id="douban-wait-reply-btn" class="douban-feather-btn" title="让AI继续讨论"> <svg
-            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
-            <line x1="16" y1="8" x2="2" y2="22"></line>
-            <line x1="17.5" y1="15" x2="9" y2="15"></line>
-          </svg> </button> <button id="douban-send-comment-btn" class="comment-send-btn">发送</button>
-      </div>
     </div>
     <div id="werewolf-game-screen" class="screen">
       <div class="header"> <span id="werewolf-game-title">狼人杀</span>
@@ -2450,17 +2399,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
